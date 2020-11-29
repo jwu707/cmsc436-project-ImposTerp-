@@ -5,42 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:textAlignment="center"
-    tools:context=".MainActivity">
-
-
-    <EditText
-        android:id="@+id/name"
-        android:layout_width="307dp"
-        android:layout_height="56dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="452dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Name" />
-
-    <Button
-        android:id="@+id/start"
-        android:layout_width="146dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="128dp"
-        android:layout_marginBottom="60dp"
-        android:text="START!" />
+    tools:context=".MainActivity"
+    android:padding="64dp">
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="314dp"
-        android:layout_height="100dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="45dp"
-        android:layout_marginTop="65dp"
-        android:text="SPY FALL DEMO"
+        android:text="TERPFALL"
+        android:layout_above="@id/name"
         android:textAlignment="center"
         android:textSize="36sp" />
+    <EditText
+        android:id="@+id/name"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName" />
+    <Button
+        android:id="@+id/start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/name"
+        android:text="START!" />
 
 </RelativeLayout>

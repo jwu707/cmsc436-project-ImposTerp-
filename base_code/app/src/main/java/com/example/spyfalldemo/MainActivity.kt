@@ -14,68 +14,75 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var start : Button
-    private lateinit var name : EditText
-    private var playerName = ""
-    private lateinit var dataBase : FirebaseDatabase
-    private lateinit var dataRef : DatabaseReference
-
+    private lateinit var btnStart : Button
+    private lateinit var txtName : EditText
+    private lateinit var databasePlayers : DatabaseReference
+    private var playerID : String = ""
+    private var playerName : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        start = findViewById(R.id.start)
-        name = findViewById(R.id.name)
+        btnStart = findViewById(R.id.start)
+        txtName = findViewById(R.id.name)
 
-        dataBase = Firebase.database;
-        start.setOnClickListener(View.OnClickListener {
-            playerName = name.text.toString()
-            name.text.clear()
-            if(playerName != ""){
-                start.setText("LOADING...")
-                start.isEnabled = false
-                dataRef = dataBase.getReference("players/$playerName")
-                addEventListener()
-                dataRef.setValue("")
-            }
-        })
+        databasePlayers = FirebaseDatabase.getInstance().getReference("players")
 
-
-
-
+        btnStart.setOnClickListener{ btnStartPress() }
     }
 
-    private fun addEventListener() {
-        dataRef.addValueEventListener(object : ValueEventListener {
+    private fun btnStartPress() {
+        // set player name and clear EditText view
+        var username = txtName.text.toString()
+        txtName.text.clear()
+
+        if (username != "") {
+            btnStart.text = "LOADING..."
+            btnStart.isEnabled = false
+
+            val id = databasePlayers.push().key
+            val player = Player(id!!, username)
+            databasePlayers.child(id).setValue(player)
+
+            playerID = id.toString()
+            playerName = username
+
+        } else {
+            Toast.makeText(
+                this,
+                "Please enter a username!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        databasePlayers.addValueEventListener(object : ValueEventListener {
+
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if(playerName != ""){
-                    val preference = getSharedPreferences("PREFS", 0)
-                    val edit = preference.edit()
-                    edit.putString("playerName", playerName)
-                    edit.apply()
-                    val room = Intent(applicationContext, Rooms::class.java);
-                    startActivity(room)
+                if (playerID != "") {
+                    val intent = Intent(applicationContext, Rooms::class.java)
+                    intent.putExtra("PLAYER_ID", playerID)
+                    intent.putExtra("PLAYER_NAME", playerName)
+                    startActivity(intent)
                     finish()
                 }
-
             }
 
             override fun onCancelled(error: DatabaseError) {
-                start.setText("START!")
-                start.isEnabled = true
-
+                btnStart.text = "START!"
+                btnStart.isEnabled = true
             }
+
         })
     }
-
-
-
-
-
 
     companion object {
         const val TAG = "SPY_FALL_DEMO"

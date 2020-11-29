@@ -5,7 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:textAlignment="center"
+    android:padding="16dp"
     tools:context=".Rooms">
+
+    <TextView
+        android:id="@+id/room_name"
+        android:text="Sample Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        />
+
+    <TextView
+        android:id="@+id/players_list_text"
+        android:text="Players"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/room_name"
+        android:paddingLeft="16dp"
+        />
 
     <Button
         android:id="@+id/begin"
@@ -13,13 +31,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Start Round" />
+        android:text="Start Game" />
 
     <ListView
         android:id="@+id/ListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/begin"/>
+        android:layout_below="@id/players_list_text"
+        />
 
 </RelativeLayout>

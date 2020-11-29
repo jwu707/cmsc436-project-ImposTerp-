@@ -11,20 +11,21 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import java.lang.Exception
 import java.util.ArrayList
 
 class Rooms : Activity() {
+
     private lateinit var listView: ListView
     private lateinit var create: Button
-    private lateinit var rooms: ArrayList<String>
-    private var playerName = ""
-    private var roomName = ""
-    private lateinit var dataBase: FirebaseDatabase
-    private lateinit var roomRef: DatabaseReference
-    private lateinit var roomsRef: DatabaseReference
-
+    private lateinit var rooms: MutableList<Room>
+    private lateinit var databaseRooms : DatabaseReference
+    private lateinit var playerID : String
+    private lateinit var playerName : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,64 +34,105 @@ class Rooms : Activity() {
         listView = findViewById(R.id.ListView)
         create = findViewById(R.id.create)
 
-        dataBase = Firebase.database
-        val preference = getSharedPreferences("PREFS", 0)
-        playerName = preference.getString("playerName", "").toString()
-        roomName = playerName
+        val intent = intent
+        playerID = intent.getStringExtra("PLAYER_ID").toString()
+        playerName = intent.getStringExtra("PLAYER_NAME").toString()
 
-        rooms = ArrayList<String>()
+        databaseRooms = FirebaseDatabase.getInstance().getReference("rooms")
+
+        rooms = ArrayList()
 
         create.setOnClickListener(View.OnClickListener {
-            create.setText("CREATING...")
-            create.isEnabled = false
-            roomName = playerName
-            roomRef = dataBase.getReference("rooms/$roomName/Host: $playerName")
-            addRoomEvent()
-            roomRef.setValue(playerName)
+            val dialogBuilder = AlertDialog.Builder(this)
+            val inflater = layoutInflater
+            val dialogView = inflater.inflate(R.layout.create_room_dialog, null)
+            dialogBuilder.setView(dialogView)
+
+            val txtRoomName = dialogView.findViewById<View>(R.id.room_name) as EditText
+            val lblPlayerCount = dialogView.findViewById<View>(R.id.player_count) as TextView
+            val barPlayerCount = dialogView.findViewById<View>(R.id.player_count_seekbar) as SeekBar
+            val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
+
+            txtRoomName.setText(playerName + "'s Game")
+
+            barPlayerCount.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
+                    lblPlayerCount.text = "Max Players - " + progress
+                }
+                override fun onStartTrackingTouch(seek: SeekBar) {}
+                override fun onStopTrackingTouch(seek: SeekBar) {}
+            })
+
+            btnConfirm.setOnClickListener{
+
+                addRoom(txtRoomName.text.toString(), barPlayerCount.progress)
+
+            }
+
+            dialogBuilder.setTitle("Create Room")
+            val b = dialogBuilder.create()
+            b.show()
         })
+
         listView.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
-                roomName = rooms.get(position)
-                roomRef = dataBase.getReference("rooms/$roomName/Player: $playerName")
-                addRoomEvent()
-                roomRef.setValue(playerName)
-            }
-        addRoomsEvent()
-    }
+                val room = rooms[position]
 
-    private fun addRoomEvent() {
-        roomRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                create.setText("CREATE ROOM")
-                create.isEnabled = true
-                val round = Intent(applicationContext, Round::class.java)
-                round.putExtra("roomName", roomName)
-                round.putExtra("playerName", playerName)
-                startActivity(round)
-            }
+                if (room.players.size < room.maxPlayers) {
+                    // add player to room
+                    val player = Player(playerID, playerName)
+                    room.players.add(player)
+                    databaseRooms.child(room.id).child("players").setValue(room.players)
 
-            override fun onCancelled(error: DatabaseError) {
-                create.setText("CREATE ROOM")
-                create.isEnabled = true
-            }
-        })
-    }
-
-
-    private fun addRoomsEvent() {
-        roomsRef = dataBase.getReference("rooms")
-        roomsRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                rooms.clear()
-                val roomIter = dataSnapshot.children
-                for (snap in roomIter){
-                    rooms.add(snap.key.toString())
-                    var adaptor = ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1, rooms)
-                    listView.adapter = adaptor
+                    joinRoom(room)
+                } else {
+                    Toast.makeText(this, "This lobby is full!", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
 
-            override fun onCancelled(error: DatabaseError) {
+    private fun joinRoom(room : Room) {
+        // start intent to create room
+        val intent = Intent(applicationContext, Round::class.java)
+        intent.putExtra("ROOM_ID", room.id)
+        intent.putExtra("PLAYER_ID", playerID)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun addRoom(roomName : String, playerCount : Int) {
+        val id = databaseRooms.push().key
+        val room = Room(id!!, roomName, playerCount, playerID)
+        room.players.add(Player(playerID, playerName))
+        databaseRooms.child(id).setValue(room)
+
+        joinRoom(room)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        databaseRooms.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                rooms.clear()
+
+                var room: Room? = null
+                for (postSnapshot in dataSnapshot.children) {
+                    try {
+                        room = postSnapshot.getValue(Room::class.java)
+                    } catch (e: Exception) {
+
+                    } finally {
+                        rooms.add(room!!)
+                    }
+                }
+
+                var adapter = RoomListAdapter(this@Rooms, rooms)
+                listView.adapter = adapter
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
 
             }
         })

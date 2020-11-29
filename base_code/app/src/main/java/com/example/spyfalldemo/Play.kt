@@ -13,6 +13,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import java.util.ArrayList
 import kotlin.random.Random
 
@@ -30,6 +31,8 @@ class Play : Activity(){
 //    var playerName = ""
 //    var size = 0
 
+    private lateinit var players : MutableList<Player>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
@@ -42,6 +45,13 @@ class Play : Activity(){
 //        locRef = dataBase.getReference("rooms/$roomName/Host: $roomName/location")
 //        spyRef = dataBase.getReference("rooms/$roomName/Host: $roomName/spy")
 
+    }
+
+    private fun castVote(playerID : String) {
+
+    }
+
+    private fun guess() {
 
     }
 }
