@@ -17,7 +17,7 @@
         android:layout_alignLeft="@id/room_name"
         android:textStyle="bold"
         android:paddingLeft="5dp"
-        android:text="Max Players - 5"
+        android:text="Max Players - 0"
         />
     <SeekBar
         android:id="@+id/player_count_seekbar"

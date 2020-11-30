@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databasePlayers : DatabaseReference
     private var playerID : String = ""
     private var playerName : String = ""
+    private lateinit var listen : ValueEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             playerID = id.toString()
             playerName = username
 
+
         } else {
             Toast.makeText(
                 this,
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        databasePlayers.addValueEventListener(object : ValueEventListener {
+       listen =  databasePlayers.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (playerID != "") {
@@ -82,6 +84,13 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        databasePlayers.addListenerForSingleValueEvent(listen)
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        databasePlayers.removeEventListener(listen)
     }
 
     companion object {

@@ -14,38 +14,74 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import kotlinx.android.synthetic.main.activity_play.*
+import java.lang.Exception
 import java.util.ArrayList
 import kotlin.random.Random
 
 
 class Play : Activity(){
 
-//    private lateinit var dataBase: FirebaseDatabase
-//    private lateinit var playerRef: DatabaseReference
-//    private lateinit var locRef: DatabaseReference
-//    private lateinit var spyRef: DatabaseReference
-//
-//    val location = arrayOf("Beach", "School", "Airport", "Park", "Gym")
-//    val max = location.size
-//    var roomName = ""
-//    var playerName = ""
-//    var size = 0
+    private lateinit var playerRef: DatabaseReference
+    private lateinit var roomRef: DatabaseReference
+    private lateinit var roleView : TextView
+    private lateinit var locView : TextView
 
-    private lateinit var players : MutableList<Player>
+    val location = arrayOf("Beach", "School", "Airport", "Park", "Gym")
+
+    //!!!!!!!!!!!make sure the role sizes are consistent! right now theres FIVE roles!!!!!!!!!!!!!!!//
+    val roleSize = 5
+
+    val beachRoles = arrayOf("Lifeguard", "Tourists", "Sea Monster", "Child", "Food Vendor")
+    val schoolRoles = arrayOf("Student", "Teacher", "Janitor", "Librarian", "Principal")
+    val airportRoles = arrayOf("Security", "Flight Attendant", "Pilot", "Crying Baby", "Lost Child")
+    val parkRoles = arrayOf("Dog", "Tree", "Bench", "Photographer", "Painter")
+    val gymRoles = arrayOf("Body Builder", "Trainer", "Weak Potato", "Yoga Instructor", "Boxer")
+
+
+
+    private var roles = HashMap<String, Array<String>> ()
+    private var roomID = ""
+    private var playerID = ""
+    private var randRole = 0
+    private var loc = ""
+    private var spy = ""
+
+
+
+    private lateinit var players : ArrayList<Player>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
-//        val randLoc = (0 until max).random()
-//        dataBase = Firebase.database
-//        roomName = intent.getStringExtra("roomName").toString()
-//        playerName = intent.getStringExtra("playerName").toString()
-//        size = intent.getStringExtra("size")!!.toInt()
-//        val randSpy = (0 until size).random()
-//        locRef = dataBase.getReference("rooms/$roomName/Host: $roomName/location")
-//        spyRef = dataBase.getReference("rooms/$roomName/Host: $roomName/spy")
+
+        roleView = findViewById(R.id.textView3)
+        locView = findViewById(R.id.textView)
+
+        roles["Beach"] = beachRoles
+        roles["School"] = schoolRoles
+        roles["Airport"] = airportRoles
+        roles["Park"] = parkRoles
+        roles["Gym"] = gymRoles
+
+        roomID = intent.getStringExtra("ROOM_ID").toString()
+        playerID = intent.getStringExtra("PLAYER_ID").toString()
+        loc = intent.getStringExtra("LOCATION").toString()
+        spy = intent.getStringExtra("SPY").toString()
+
+
+        randRole = (0 until roleSize).random()
+        if (playerID == spy){
+            roleView.text = "SPY"
+            locView.text = "Guess the Location to WIN!"
+        }else{
+            roleView.text = roles.get(loc)!![randRole].toString()
+            locView.text = "Location: " + loc
+        }
 
     }
+
+
 
     private fun castVote(playerID : String) {
 

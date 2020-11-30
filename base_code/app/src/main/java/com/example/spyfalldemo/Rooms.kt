@@ -65,8 +65,11 @@ class Rooms : Activity() {
             })
 
             btnConfirm.setOnClickListener{
-
-                addRoom(txtRoomName.text.toString(), barPlayerCount.progress)
+                if (barPlayerCount.progress < 3){
+                    Toast.makeText(applicationContext, "Cannot play with less than 3 players", Toast.LENGTH_SHORT).show()
+                } else{
+                    addRoom(txtRoomName.text.toString(), barPlayerCount.progress)
+                }
 
             }
 

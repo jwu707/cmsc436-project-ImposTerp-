@@ -34,9 +34,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="157dp"
+        android:layout_marginStart="156dp"
         android:layout_marginEnd="69dp"
-        android:layout_marginBottom="595dp"
+        android:layout_marginBottom="555dp"
         android:text="ROLE"
         android:textAlignment="center"
         android:textSize="36sp" />
@@ -58,8 +58,9 @@
         android:layout_height="35dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="86dp"
-        android:layout_marginBottom="47dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="101dp"
+        android:layout_marginBottom="85dp"
         android:text="Location: "
         android:textSize="18sp" />
 
