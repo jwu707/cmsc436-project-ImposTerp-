@@ -14,8 +14,9 @@
             android:text="Sample Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="28dp"
+            android:textColor="@color/blackish"
+            android:textSize="24dp"
+            android:fontFamily="@font/limelight"
             />
         <TextView
             android:id="@+id/status"
@@ -25,7 +26,8 @@
             android:layout_below="@id/players"
             android:layout_toRightOf="@id/name"
             android:layout_alignParentRight="true"
-            android:textAlignment="viewEnd"/>
+            android:textAlignment="viewEnd"
+            android:textColor="@color/blackish"/>
         <TextView
             android:id="@+id/players"
             android:text="Sample Text"
@@ -34,6 +36,7 @@
             android:layout_toRightOf="@id/name"
             android:layout_alignParentRight="true"
             android:textAlignment="viewEnd"
+            android:textColor="@color/blackish"
             />
     </RelativeLayout>
 </LinearLayout>

@@ -3,4 +3,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="umdRed">#E21833</color>
+    <color name="umdYellow">#ffd200</color>
+    <color name="umdBrown">#AD7C59</color>
+    <color name="blackish">#0F0F0F</color>
+    <color name="whiteish">#F0F0F0</color>
 </resources>

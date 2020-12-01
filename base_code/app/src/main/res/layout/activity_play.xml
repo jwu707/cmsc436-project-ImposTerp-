@@ -6,73 +6,100 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/vote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="294dp"
-        android:text="Vote"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="224dp" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="24dp"
-        android:text="Chat" />
-
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="185dp"
+        android:id="@+id/timer"
+        android:text="TIMER"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="156dp"
-        android:layout_marginEnd="69dp"
-        android:layout_marginBottom="555dp"
-        android:text="ROLE"
         android:textAlignment="center"
-        android:textSize="36sp" />
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:fontFamily="@font/limelight"
+        android:textSize="24dp"
+        android:padding="8dp"
+        />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="75dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_below="@id/timer"
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="208dp"
-        android:layout_height="35dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="101dp"
-        android:layout_marginBottom="85dp"
-        android:text="Location: "
-        android:textSize="18sp" />
+        >
+        <ImageView
+            android:id="@+id/role_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/role_icon"
+            android:text="Sample Text"
+            android:fontFamily="@font/limelight"
+            android:textColor="@color/blackish"
+            android:textSize="24dp"
+            />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/role_icon"
+            android:layout_below="@id/role"
+            android:fontFamily="@font/limelight"
+            android:text="Sample Text"
+            android:textSize="24dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/actions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="229dp"
-        android:text="Guess" />
+        android:layout_below="@id/info"
+        >
 
+        <TextView
+            android:id="@+id/player_grid_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/limelight"
+            android:textAlignment="center"
+            android:text="Players"
+            android:textSize="18dp"
+            android:layout_marginLeft="4dp"
+            />
+        <GridLayout
+            android:id="@+id/players_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/player_grid_text"
+            android:layout_centerHorizontal="true"
+            android:columnCount="5"
+            >
+        </GridLayout>
 
-
+        <TextView
+            android:id="@+id/locations_grid_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/limelight"
+            android:layout_below="@id/players_grid"
+            android:textAlignment="center"
+            android:text="Locations"
+            android:textSize="18dp"
+            android:layout_marginLeft="4dp"
+            />
+        <GridLayout
+            android:id="@+id/locations_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/locations_grid_text"
+            android:layout_centerHorizontal="true"
+            android:columnCount="5"
+            >
+        </GridLayout>
+    </RelativeLayout>
 </RelativeLayout>

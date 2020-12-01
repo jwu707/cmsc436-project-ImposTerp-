@@ -21,7 +21,7 @@ import java.util.ArrayList
 class Rooms : Activity() {
 
     private lateinit var listView: ListView
-    private lateinit var create: Button
+    private lateinit var btnCreate: Button
     private lateinit var rooms: MutableList<Room>
     private lateinit var databaseRooms : DatabaseReference
     private lateinit var playerID : String
@@ -32,9 +32,8 @@ class Rooms : Activity() {
         setContentView(R.layout.activity_room)
 
         listView = findViewById(R.id.ListView)
-        create = findViewById(R.id.create)
+        btnCreate = findViewById(R.id.create)
 
-        val intent = intent
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
 
@@ -42,7 +41,7 @@ class Rooms : Activity() {
 
         rooms = ArrayList()
 
-        create.setOnClickListener(View.OnClickListener {
+        btnCreate.setOnClickListener(View.OnClickListener {
             val dialogBuilder = AlertDialog.Builder(this)
             val inflater = layoutInflater
             val dialogView = inflater.inflate(R.layout.create_room_dialog, null)
@@ -53,7 +52,7 @@ class Rooms : Activity() {
             val barPlayerCount = dialogView.findViewById<View>(R.id.player_count_seekbar) as SeekBar
             val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
 
-            txtRoomName.setText(playerName + "'s Game")
+            txtRoomName.setText(playerName + "'s game")
 
             barPlayerCount.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
@@ -64,6 +63,7 @@ class Rooms : Activity() {
                 override fun onStopTrackingTouch(seek: SeekBar) {}
             })
 
+            // TODO : set min progress to 3
             btnConfirm.setOnClickListener{
                 if (barPlayerCount.progress < 3){
                     Toast.makeText(applicationContext, "Cannot play with less than 3 players", Toast.LENGTH_SHORT).show()
@@ -78,21 +78,23 @@ class Rooms : Activity() {
             b.show()
         })
 
-        listView.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
-                val room = rooms[position]
+        listView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            val room = rooms[position]
 
+            if (!room.inGame) {
                 if (room.players.size < room.maxPlayers) {
                     // add player to room
-                    val player = Player(playerID, playerName)
-                    room.players.add(player)
+                    room.players[playerID] = Player(playerID, playerName)
                     databaseRooms.child(room.id).child("players").setValue(room.players)
 
                     joinRoom(room)
                 } else {
                     Toast.makeText(this, "This lobby is full!", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                Toast.makeText(this, "This lobby is already in game!", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     private fun joinRoom(room : Room) {
@@ -107,7 +109,7 @@ class Rooms : Activity() {
     private fun addRoom(roomName : String, playerCount : Int) {
         val id = databaseRooms.push().key
         val room = Room(id!!, roomName, playerCount, playerID)
-        room.players.add(Player(playerID, playerName))
+        room.players[playerID] = Player(playerID, playerName)
         databaseRooms.child(id).setValue(room)
 
         joinRoom(room)

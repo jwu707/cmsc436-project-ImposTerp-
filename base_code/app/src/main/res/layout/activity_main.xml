@@ -6,17 +6,19 @@
     android:layout_height="match_parent"
     android:textAlignment="center"
     tools:context=".MainActivity"
-    android:padding="64dp">
-
+    android:padding="64dp"
+    >
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:fontFamily="@font/limelight"
         android:text="TERPFALL"
+        android:textColor="@color/blackish"
         android:layout_above="@id/name"
         android:textAlignment="center"
-        android:textSize="36sp" />
+        android:textSize="48dp" />
     <EditText
         android:id="@+id/name"
         android:layout_centerVertical="true"
@@ -24,6 +26,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Name"
+        android:fontFamily="@font/limelight"
         android:inputType="textPersonName" />
     <Button
         android:id="@+id/start"
@@ -31,6 +34,9 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/name"
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:fontFamily="@font/limelight"
+        android:textSize="24dp"
         android:text="START!" />
-
 </RelativeLayout>

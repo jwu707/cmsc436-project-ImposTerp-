@@ -1,15 +1,15 @@
 package com.example.spyfalldemo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.WindowManager
+import android.widget.*
+import androidx.core.view.get
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -19,7 +19,7 @@ import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnStart : Button
-    private lateinit var txtName : EditText
+    private lateinit var edtName : EditText
     private lateinit var databasePlayers : DatabaseReference
     private var playerID : String = ""
     private var playerName : String = ""
@@ -29,8 +29,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportActionBar!!.hide()
+
         btnStart = findViewById(R.id.start)
-        txtName = findViewById(R.id.name)
+        edtName = findViewById(R.id.name)
 
         databasePlayers = FirebaseDatabase.getInstance().getReference("players")
 
@@ -39,8 +41,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun btnStartPress() {
         // set player name and clear EditText view
-        var username = txtName.text.toString()
-        txtName.text.clear()
+        var username = edtName.text.toString()
+        edtName.text.clear()
 
         if (username != "") {
             btnStart.text = "LOADING..."
@@ -52,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
             playerID = id.toString()
             playerName = username
-
 
         } else {
             Toast.makeText(
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-       listen =  databasePlayers.addValueEventListener(object : ValueEventListener {
+       listen = databasePlayers.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (playerID != "") {

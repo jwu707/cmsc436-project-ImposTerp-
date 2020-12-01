@@ -8,19 +8,37 @@
     android:textAlignment="center"
     tools:context=".Rooms">
 
-    <Button
-        android:id="@+id/create"
+    <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Create Room" />
+        android:text="Lobby List"
+        android:textSize="24dp"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:fontFamily="@font/limelight"
+        />
 
     <ListView
         android:id="@+id/ListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/create"/>
+        android:layout_below="@id/title"
+        android:layout_above="@id/create"
+        />
+
+    <Button
+        android:id="@+id/create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:text="Create New Lobby"
+        android:fontFamily="@font/limelight"
+        android:textSize="24dp"/>
+
 
 </RelativeLayout>

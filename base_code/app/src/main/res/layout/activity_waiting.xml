@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:textAlignment="center"
-    android:padding="16dp"
     tools:context=".Rooms">
 
     <TextView
@@ -13,7 +12,12 @@
         android:text="Sample Text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:padding="8dp"
         android:textAlignment="center"
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:fontFamily="@font/limelight"
         />
 
     <TextView
@@ -27,11 +31,15 @@
 
     <Button
         android:id="@+id/begin"
+        android:text="Start Game"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Start Game" />
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:fontFamily="@font/limelight"
+        android:textSize="24dp"
+        />
 
     <ListView
         android:id="@+id/ListView"

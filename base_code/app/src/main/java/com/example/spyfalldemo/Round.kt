@@ -26,13 +26,7 @@ class Round : Activity(){
     private lateinit var databaseRoom: DatabaseReference
     private lateinit var databaseRoomPlayers: DatabaseReference
 
-
-    //for thr role distribution//
-    private lateinit var locRef: DatabaseReference
-    private lateinit var spyRef: DatabaseReference
-    val location = arrayOf("Beach", "School", "Airport", "Park", "Gym")
-    var loc = ""
-    var spy = ""
+    private val locationsArray = arrayOf("Beach", "School", "Airport", "Park", "Gym")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,35 +42,45 @@ class Round : Activity(){
         players = ArrayList()
 
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
-        databaseRoomPlayers = FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("players")
-        spyRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("spy")
-        locRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("location")
+        databaseRoomPlayers = databaseRoom.child("players")
 
         btnStart.setOnClickListener(View.OnClickListener {
-            if(players.size <= 2){
+            if(players.size <= 1){
                 Toast.makeText(applicationContext, "Waiting for for more players...", Toast.LENGTH_SHORT).show()
             } else {
                 databaseRoom.child("inGame").setValue(true)
 
+                // reset previous game variables
+                databaseRoom.child("spyWins").setValue(false)
+                databaseRoom.child("civilianWins").setValue(false)
+
+                val playersMap = HashMap<String, Player>()
+                for(i in players.indices) {
+                    val player = players[i]
+                    playersMap[player.id] = Player(player.id, player.name)
+                }
+                databaseRoom.child("players").setValue(playersMap)
+
                 //check with Play.kt to see the # of location and roles,//
                 // right now there are 5 locations and 5 roles per locations//
-                val randLoc = (0 until location.size).random()
+                val randLoc = (0 until locationsArray.size).random()
                 val randSpy = (0 until players.size).random()
-                loc = location[randLoc]
-                spy = players[randSpy].id
-                locRef.setValue(loc)
-                spyRef.setValue(spy)
+                val location = locationsArray[randLoc]
+                val spyID = players[randSpy].id
+                databaseRoom.child("location").setValue(location)
+                databaseRoom.child("spy").setValue(spyID)
             }
         })
     }
 
+    private fun generateGameInfo() {
+
+    }
 
     private fun startGame() {
         val intent = Intent(applicationContext, Play::class.java)
         intent.putExtra("ROOM_ID", roomID)
         intent.putExtra("PLAYER_ID", playerID)
-        intent.putExtra("LOCATION", loc)
-        intent.putExtra("SPY", spy)
         startActivity(intent)
         finish()
     }
@@ -107,6 +111,8 @@ class Round : Activity(){
                         if (postSnapshot.key == "name") {
                             txtRoomName.text = postSnapshot.value.toString()
                         }
+
+                        /*
                         if (postSnapshot.key == "location"){
                             if (postSnapshot.value != ""){
                                 loc = postSnapshot.value.toString()
@@ -119,14 +125,14 @@ class Round : Activity(){
                                 spyStat = true
                             }
                         }
-
+                        */
                     } catch (e: Exception) {
 
                     } finally {
 
                     }
                 }
-                if (gameStat && locStat && spyStat){
+                if (gameStat/* && locStat && spySta*/){
                     startGame()
                 }
             }
@@ -159,15 +165,12 @@ class Round : Activity(){
 
                 var adapter = LobbyPlayerListAdapter(this@Round, players, host)
                 listView.adapter = adapter
+
+
             }
             override fun onCancelled(error: DatabaseError) {
 
             }
         })
-
-
-
-
-
     }
 }

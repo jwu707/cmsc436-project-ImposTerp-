@@ -19,7 +19,6 @@ class LobbyPlayerListAdapter(private val context: Activity, private var players:
 
         val player = players[position]
 
-
         if (player.id == host) {
             textViewName.text = player.name + " (Host)"
         } else {
