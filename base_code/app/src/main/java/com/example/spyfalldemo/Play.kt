@@ -1,23 +1,16 @@
 package com.example.spyfalldemo
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-import android.view.View
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
+import android.os.Bundle
+import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_play.*
-import java.lang.Exception
-import java.util.ArrayList
-import kotlin.random.Random
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.set
 
 
 class Play : Activity(){
@@ -47,16 +40,30 @@ class Play : Activity(){
     private var loc = ""
     private var spy = ""
 
+    private var chatList = ArrayList<Chat>()
+    private lateinit var chatButton:Button
+    private lateinit var sendButton:ImageButton
+    private lateinit var chatLayout:FrameLayout
+    private lateinit var chatMessage:EditText
 
 
     private lateinit var players : ArrayList<Player>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Log.i("TAG", "create new player activity")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
 
         roleView = findViewById(R.id.textView3)
         locView = findViewById(R.id.textView)
+
+        chatLayout = findViewById(R.id.ChatLayout)
+        chatButton = findViewById(R.id.ChatButton)
+        sendButton = findViewById(R.id.sendButton)
+        chatMessage = findViewById(R.id.messageText)
+
+        var chatList = ArrayList<Chat>()
+
 
         roles["Beach"] = beachRoles
         roles["School"] = schoolRoles
@@ -69,6 +76,11 @@ class Play : Activity(){
         loc = intent.getStringExtra("LOCATION").toString()
         spy = intent.getStringExtra("SPY").toString()
 
+        roomRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
+
+        chatView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+
+
 
         randRole = (0 until roleSize).random()
         if (playerID == spy){
@@ -79,6 +91,54 @@ class Play : Activity(){
             locView.text = "Location: " + loc
         }
 
+        chatButton.setOnClickListener {
+            if (chatLayout.visibility != View.VISIBLE)
+                chatLayout.visibility = View.VISIBLE
+            else
+                chatLayout.visibility = View.GONE
+
+        }
+        sendButton.setOnClickListener{
+            sendMessage(playerID, chatMessage)
+        }
+
+        readMessage()
+    }
+
+    fun sendMessage(playerID: String, message: EditText){
+        if (message.text.toString() != "") {
+            var chat = Chat(playerID, chatMessage.text.toString())
+            roomRef.child("chat").push().setValue(chat)
+            message.text.clear()
+        }
+    }
+
+    fun readMessage() {
+        val databaseReference: DatabaseReference = roomRef.child("chat")
+
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                chatList.clear()
+                for (dataSnapShot: DataSnapshot in snapshot.children) {
+                    //Log.i("TAG", "dataSnapshot " + dataSnapShot.getValue(String::class.java))
+                    val senderId = dataSnapShot.child("senderId").getValue(String::class.java)
+                    val message = dataSnapShot.child("message").getValue(String::class.java)
+
+                    var chat = Chat(senderId, message)
+
+                    if (chat != null) {
+                        chatList.add(chat)
+                    }
+                }
+
+                val chatAdapter = ChatAdapter(this@Play, playerID, chatList, FirebaseDatabase.getInstance())
+                chatView.adapter = chatAdapter
+            }
+        })
     }
 
 

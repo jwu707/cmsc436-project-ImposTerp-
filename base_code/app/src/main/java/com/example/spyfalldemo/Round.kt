@@ -53,7 +53,8 @@ class Round : Activity(){
         locRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("location")
 
         btnStart.setOnClickListener(View.OnClickListener {
-            if(players.size <= 2){
+            // Originally 2
+            if(players.size <= 0){
                 Toast.makeText(applicationContext, "Waiting for for more players...", Toast.LENGTH_SHORT).show()
             } else {
                 databaseRoom.child("inGame").setValue(true)

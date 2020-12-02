@@ -118,6 +118,7 @@ class Rooms : Activity() {
 
         databaseRooms.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                Log.i("TAG", "Rooms on start redone")
                 rooms.clear()
 
                 var room: Room? = null
