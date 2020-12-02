@@ -48,6 +48,7 @@ class Play : Activity(){
     private var votes = HashMap<String, Int>()
     private lateinit var roomID : String
     private lateinit var playerID : String
+    private lateinit var playerName : String
     private lateinit var location : String
     private var randRole = 0
     private var votingThreshold : Int = 99
@@ -57,12 +58,17 @@ class Play : Activity(){
     private var isHost : Boolean = false
     private var isSpy : Boolean = false
 
+    private lateinit var btnLeave: Button
+    private lateinit var databaseRoomLeave: DatabaseReference
+    private var host = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
 
         txtRole = findViewById(R.id.role)
         txtLocation = findViewById(R.id.location)
+        btnLeave = findViewById(R.id.leave)
 
         roles["Beach"] = beachRoles
         roles["School"] = schoolRoles
@@ -72,6 +78,8 @@ class Play : Activity(){
 
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
+        playerName = intent.getStringExtra("PLAYER_NAME").toString()
+        host = intent.getStringExtra("HOST").toString()
 
         players = ArrayList()
 
@@ -80,6 +88,20 @@ class Play : Activity(){
 
         grdLocations = findViewById(R.id.locations_grid)
         grdPlayers = findViewById(R.id.players_grid)
+
+
+//        btnLeave.setOnClickListener(View.OnClickListener {
+//            if (host == playerID){
+//                databaseRoom.child("finished").setValue(true)
+//            }else {
+//                databaseRoomLeave = databaseRoomPlayers.child(playerID)
+//                databaseRoomLeave.removeValue()
+//                val backLobby = Intent(applicationContext, Rooms::class.java)
+//                backLobby.putExtra("PLAYER_ID", playerID)
+//                backLobby.putExtra("PLAYER_NAME", playerName)
+//                startActivity(backLobby)
+//            }
+//        })
     }
 
     private fun populatePlayersGrid() {
@@ -326,6 +348,17 @@ class Play : Activity(){
                         if (postSnapshot.key == "location") {
                             location = postSnapshot.value.toString()
                         }
+
+//                        if (postSnapshot.key == "finished"){
+//                            if (postSnapshot.value as Boolean){
+//                                databaseRoom.removeValue()
+//                                Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
+//                                val backLobby = Intent(applicationContext, Rooms::class.java)
+//                                backLobby.putExtra("PLAYER_ID", playerID)
+//                                backLobby.putExtra("PLAYER_NAME", playerName)
+//                                startActivity(backLobby)
+//                            }
+//                        }
 
                         randRole = (0 until roleSize).random()
                         // duplicate roles

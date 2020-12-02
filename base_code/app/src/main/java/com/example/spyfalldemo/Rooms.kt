@@ -26,6 +26,7 @@ class Rooms : Activity() {
     private lateinit var databaseRooms : DatabaseReference
     private lateinit var playerID : String
     private lateinit var playerName : String
+    private var host = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +54,7 @@ class Rooms : Activity() {
             val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
 
             txtRoomName.setText(playerName + "'s game")
+            host = playerID
 
             barPlayerCount.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
@@ -102,6 +104,8 @@ class Rooms : Activity() {
         val intent = Intent(applicationContext, Round::class.java)
         intent.putExtra("ROOM_ID", room.id)
         intent.putExtra("PLAYER_ID", playerID)
+        intent.putExtra("HOST", host)
+        intent.putExtra("PLAYER_NAME", playerName)
         startActivity(intent)
         finish()
     }
