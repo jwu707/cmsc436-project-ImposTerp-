@@ -35,6 +35,8 @@ class Play : Activity(){
         val airportRoles = arrayOf("Security", "Flight Attendant", "Pilot", "Crying Baby", "Lost Child")
         val parkRoles = arrayOf("Dog", "Tree", "Bench", "Photographer", "Painter")
         val gymRoles = arrayOf("Body Builder", "Trainer", "Weak Potato", "Yoga Instructor", "Boxer")
+
+        val role_icons = arrayOf(R.drawable.bee, R.drawable.top_hat, R.drawable.tu_tu, R.drawable.nerd, R.drawable.pirate)
     }
 
     private lateinit var databaseRoom: DatabaseReference
@@ -43,6 +45,7 @@ class Play : Activity(){
     private lateinit var txtLocation : TextView
     private lateinit var grdLocations : GridLayout
     private lateinit var grdPlayers : GridLayout
+    private lateinit var icon: ImageView
 
     private var roles = HashMap<String, Array<String>> ()
     private var votes = HashMap<String, Int>()
@@ -58,9 +61,8 @@ class Play : Activity(){
     private var isHost : Boolean = false
     private var isSpy : Boolean = false
 
-    private lateinit var btnLeave: Button
-    private lateinit var databaseRoomLeave: DatabaseReference
     private var host = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +70,7 @@ class Play : Activity(){
 
         txtRole = findViewById(R.id.role)
         txtLocation = findViewById(R.id.location)
-        btnLeave = findViewById(R.id.leave)
+        icon = findViewById(R.id.role_icon)
 
         roles["Beach"] = beachRoles
         roles["School"] = schoolRoles
@@ -89,19 +91,6 @@ class Play : Activity(){
         grdLocations = findViewById(R.id.locations_grid)
         grdPlayers = findViewById(R.id.players_grid)
 
-
-//        btnLeave.setOnClickListener(View.OnClickListener {
-//            if (host == playerID){
-//                databaseRoom.child("finished").setValue(true)
-//            }else {
-//                databaseRoomLeave = databaseRoomPlayers.child(playerID)
-//                databaseRoomLeave.removeValue()
-//                val backLobby = Intent(applicationContext, Rooms::class.java)
-//                backLobby.putExtra("PLAYER_ID", playerID)
-//                backLobby.putExtra("PLAYER_NAME", playerName)
-//                startActivity(backLobby)
-//            }
-//        })
     }
 
     private fun populatePlayersGrid() {
@@ -348,26 +337,19 @@ class Play : Activity(){
                         if (postSnapshot.key == "location") {
                             location = postSnapshot.value.toString()
                         }
-
-//                        if (postSnapshot.key == "finished"){
-//                            if (postSnapshot.value as Boolean){
-//                                databaseRoom.removeValue()
-//                                Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
-//                                val backLobby = Intent(applicationContext, Rooms::class.java)
-//                                backLobby.putExtra("PLAYER_ID", playerID)
-//                                backLobby.putExtra("PLAYER_NAME", playerName)
-//                                startActivity(backLobby)
-//                            }
-//                        }
+                        
 
                         randRole = (0 until roleSize).random()
                         // duplicate roles
                         if (isSpy){
                             txtRole.text = "You are the SPY."
                             txtLocation.text = "Guess the Location to WIN!"
+                            icon.setImageResource(R.drawable.spy)
                         }else{
                             txtRole.text = "Role: " + roles[location]!![randRole].toString()
                             txtLocation.text = "Location: " + location
+                            val randIcon = (0 until roleSize).random()
+                            icon.setImageResource(role_icons[randIcon])
                         }
                     } catch (e: Exception) {
 
