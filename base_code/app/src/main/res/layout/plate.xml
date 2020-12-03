@@ -12,9 +12,9 @@
         android:fontFamily="@font/limelight"
         android:textSize="16dp"
         android:padding="8dp"
+        android:background="@color/blackish"
         android:layout_margin="4dp"
         android:textAlignment="center"
-        android:background="@color/blackish"
         android:textColor="@color/whiteish"
         android:text="Sample Text"
         />

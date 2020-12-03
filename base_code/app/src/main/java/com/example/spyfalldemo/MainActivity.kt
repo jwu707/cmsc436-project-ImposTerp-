@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databasePlayers : DatabaseReference
     private var playerID : String = ""
     private var playerName : String = ""
-    private lateinit var listen : ValueEventListener
+    private lateinit var onChangeListenerPlayers : ValueEventListener
 
 
     private lateinit var mFrame: FrameLayout
@@ -119,9 +119,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-       listen = databasePlayers.addValueEventListener(object : ValueEventListener {
-
+        onChangeListenerPlayers = databasePlayers.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (playerID != "") {
                     val intent = Intent(applicationContext, Rooms::class.java)
@@ -131,23 +129,17 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 btnStart.text = "START!"
                 btnStart.isEnabled = true
             }
-
         })
-        databasePlayers.addListenerForSingleValueEvent(listen)
-
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        databasePlayers.removeEventListener(listen)
+    override fun onPause() {
+        super.onPause()
+        databasePlayers.removeEventListener(onChangeListenerPlayers)
     }
-
-
 
     inner class CharaView internal constructor(context: Context, x: Float, y: Float, bitmap: Bitmap) :
         View(context) {

@@ -49,7 +49,7 @@ class Rooms : Activity() {
             dialogBuilder.setView(dialogView)
 
             val txtRoomName = dialogView.findViewById<View>(R.id.room_name) as EditText
-            val lblPlayerCount = dialogView.findViewById<View>(R.id.player_count) as TextView
+            val lblPlayerCount = dialogView.findViewById<View>(R.id.player_count_num) as TextView
             val barPlayerCount = dialogView.findViewById<View>(R.id.player_count_seekbar) as SeekBar
             val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
 
@@ -58,23 +58,17 @@ class Rooms : Activity() {
             barPlayerCount.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                    lblPlayerCount.text = "Max Players - " + progress
+                    lblPlayerCount.text = (progress + 3).toString()
                 }
                 override fun onStartTrackingTouch(seek: SeekBar) {}
                 override fun onStopTrackingTouch(seek: SeekBar) {}
             })
 
-            // TODO : set min progress to 3
             btnConfirm.setOnClickListener{
-                if (barPlayerCount.progress < 3){
-                    Toast.makeText(applicationContext, "Cannot play with less than 3 players", Toast.LENGTH_SHORT).show()
-                } else{
-                    addRoom(txtRoomName.text.toString(), barPlayerCount.progress)
-                }
-
+                val num = barPlayerCount.progress + 3
+                addRoom(txtRoomName.text.toString(), num)
             }
 
-            dialogBuilder.setTitle("Create Room")
             val b = dialogBuilder.create()
             b.show()
         })

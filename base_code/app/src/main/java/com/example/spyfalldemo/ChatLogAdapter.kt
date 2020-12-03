@@ -12,16 +12,23 @@ class ChatLogAdapter(private val context: Activity, private var messages: List<C
 
     @SuppressLint("InflateParams", "ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+
+        val message = messages[position]
+
         val inflater = context.layoutInflater
         val listViewItem = inflater.inflate(R.layout.list_item_chat_message, null, true)
 
         val txtSender = listViewItem.findViewById(R.id.sender) as TextView
         val txtContent = listViewItem.findViewById(R.id.content) as TextView
 
-        val message = messages[position]
-
-        txtSender.text = message.sender
-        txtContent.text = message.content
+        // for special messages from host
+        if (message.sender == "") {
+            txtSender.text = message.content
+            txtContent.text = ""
+        } else {
+            txtSender.text = message.sender
+            txtContent.text = message.content
+        }
 
         return listViewItem
     }

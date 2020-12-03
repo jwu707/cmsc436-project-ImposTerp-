@@ -35,8 +35,20 @@ class Round : Activity(){
     private lateinit var onChangeListenerPlayers : ValueEventListener
     private lateinit var onChangeListenerChatLog : ValueEventListener
     private lateinit var hostID : String
+    private lateinit var roles : HashMap<String, MutableList<String>>
 
-    private val locationsArray = arrayOf("Beach", "School", "Airport", "Park", "Gym")
+    companion object {
+        const val MIN_PLAYERS = 2
+
+        //!!!!!!!!!!!make sure the role sizes are consistent! right now there's FIVE roles!!!!!!!!!!!!!!!//
+        val locations = arrayOf("Beach", "School", "Airport", "Park", "Gym")
+        val beachRoles = mutableListOf("Lifeguard", "Tourists", "Sea Monster", "Child", "Food Vendor", "Role6", "Role7", "Role8", "Role9")
+        val schoolRoles = mutableListOf("Student", "Teacher", "Janitor", "Librarian", "Principal", "Role6", "Role7", "Role8", "Role9")
+        val airportRoles = mutableListOf("Security", "Flight Attendant", "Pilot", "Crying Baby", "Lost Child", "Role6", "Role7", "Role8", "Role9")
+        val parkRoles = mutableListOf("Dog", "Tree", "Bench", "Photographer", "Painter", "Role6", "Role7", "Role8", "Role9")
+        val gymRoles = mutableListOf("Body Builder", "Trainer", "Weak Potato", "Yoga Instructor", "Boxer", "Role6", "Role7", "Role8", "Role9")
+        val colors = mutableListOf("#ffffff","#000000","#ff0000","#0000ff","#00ff00","#000000","#f0f0f0","#0f0f0f","#121212","#343434")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +65,15 @@ class Round : Activity(){
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
+
+        roles = HashMap<String, MutableList<String>>()
+        roles["Beach"] = beachRoles
+        roles["School"] = schoolRoles
+        roles["Airport"] = airportRoles
+        roles["Park"] = parkRoles
+        roles["Gym"] = gymRoles
+        //val randRole = (roles.indices).random()
+        //roles[location]!![randRole].toString()
 
         players = ArrayList()
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
@@ -71,30 +92,44 @@ class Round : Activity(){
         }
 
         btnStart.setOnClickListener{
-            if(players.size <= 1){
-                Toast.makeText(applicationContext, "Waiting for for more players...", Toast.LENGTH_SHORT).show()
-            } else {
+            if(players.size >= MIN_PLAYERS){
                 databaseRoom.child("inGame").setValue(true)
 
                 // reset previous game variables
                 databaseRoom.child("spyWins").setValue(false)
                 databaseRoom.child("civilianWins").setValue(false)
+                databaseRoom.child("messages").setValue(HashMap<String,ChatMessage>())
 
+                // assign location
+                val randLocation = locations.indices.random()
+                val location = locations[randLocation]
+                databaseRoom.child("location").setValue(location)
+
+                // assign spy
+                val randSpy = players.indices.random()
+                val spyID = players[randSpy].id
+                databaseRoom.child("spy").setValue(spyID)
+
+                roles[location]!!.shuffle()
+                colors.shuffle()
+                // reset player vote and roles
+                // real jank
+                var offset = 0
                 val playersMap = HashMap<String, Player>()
                 for(i in players.indices) {
                     val player = players[i]
-                    playersMap[player.id] = Player(player.id, player.name)
+                    if (player.id != spyID) {
+                        val role = roles[location]?.get(i - offset).toString()
+                        playersMap[player.id] = Player(player.id, player.name, role, "", colors[i])
+                    } else {
+                        playersMap[player.id] = Player(player.id, player.name, "Spy", "", colors[i])
+                        offset = 1
+                    }
                 }
                 databaseRoom.child("players").setValue(playersMap)
 
-                //check with Play.kt to see the # of location and roles,//
-                // right now there are 5 locations and 5 roles per locations//
-                val randLoc = (0 until locationsArray.size).random()
-                val randSpy = (0 until players.size).random()
-                val location = locationsArray[randLoc]
-                val spyID = players[randSpy].id
-                databaseRoom.child("location").setValue(location)
-                databaseRoom.child("spy").setValue(spyID)
+            } else {
+                Toast.makeText(applicationContext, "Waiting for for more players...", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -111,10 +146,6 @@ class Round : Activity(){
             val msg = ChatMessage(sender, content)
             databaseRoomChatLog.push().setValue(msg)
         }
-    }
-
-    private fun generateGameInfo() {
-
     }
 
     private fun startGame() {

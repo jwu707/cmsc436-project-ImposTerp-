@@ -1,40 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/room_name"
+    <RelativeLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
-    <TextView
-        android:id="@+id/player_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/room_name"
-        android:layout_alignLeft="@id/room_name"
-        android:textStyle="bold"
-        android:paddingLeft="5dp"
-        android:text="Max Players - 0"
-        />
-    <SeekBar
-        android:id="@+id/player_count_seekbar"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/room_name"
-        android:layout_toRightOf="@id/player_count"
-        android:layout_marginTop="0dp"
-        android:minWidth="250dp"
-        android:max="10" />
+        android:padding="16dp">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/limelight"
+            android:textStyle="bold"
+            android:textColor="@color/blackish"
+            android:text="Create Room"
+            android:textSize="24dp"
+            />
+        <EditText
+            android:id="@+id/room_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title"
+            android:fontFamily="@font/limelight"
+            />
+        <TextView
+            android:id="@+id/player_count_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/room_name"
+            android:layout_alignLeft="@id/room_name"
+            android:fontFamily="@font/limelight"
+            android:textStyle="bold"
+            android:textSize="24dp"
+            android:text="Max Players - "
+            />
+        <TextView
+            android:id="@+id/player_count_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/room_name"
+            android:layout_toRightOf="@id/player_count_text"
+            android:fontFamily="@font/limelight"
+            android:textStyle="bold"
+            android:textSize="24dp"
+            android:text="3"
+            />
+        <SeekBar
+            android:id="@+id/player_count_seekbar"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/room_name"
+            android:layout_toRightOf="@id/player_count_num"
+            android:max="7"
+            />
+
+    </RelativeLayout>
     <Button
         android:id="@+id/confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/player_count_seekbar"
+        android:layout_below="@id/content"
+        android:fontFamily="@font/limelight"
+        android:textColor="@color/whiteish"
+        android:background="@color/blackish"
         android:text="Confirm"
-        android:layout_marginTop="24dp"
+        android:textSize="24dp"
         />
 </RelativeLayout>

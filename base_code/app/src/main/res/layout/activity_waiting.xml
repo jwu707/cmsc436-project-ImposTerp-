@@ -47,6 +47,7 @@
         android:layout_below="@id/header"
         android:textColor="@color/blackish"
         android:fontFamily="@font/limelight"
+        android:textAlignment="center"
         android:textSize="16dp"
         android:padding="16dp"
         />
