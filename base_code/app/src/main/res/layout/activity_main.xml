@@ -6,37 +6,59 @@
     android:layout_height="match_parent"
     android:textAlignment="center"
     tools:context=".MainActivity"
-    android:padding="64dp"
+
     >
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/space"
+        />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="186dp"
+        android:layout_marginEnd="5dp"
         android:fontFamily="@font/limelight"
         android:text="TERPFALL"
-        android:textColor="@color/blackish"
-        android:layout_above="@id/name"
         android:textAlignment="center"
+        android:textColor="@color/whiteish"
         android:textSize="48dp" />
+
     <EditText
         android:id="@+id/name"
-        android:layout_centerVertical="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="315dp"
+        android:background="@color/whiteish"
         android:ems="10"
-        android:hint="Name"
         android:fontFamily="@font/limelight"
+        android:hint="Name"
+        android:textAlignment="center"
         android:inputType="textPersonName" />
+
     <Button
         android:id="@+id/start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/name"
+        android:layout_marginBottom="246dp"
         android:background="@color/blackish"
-        android:textColor="@color/whiteish"
         android:fontFamily="@font/limelight"
-        android:textSize="24dp"
-        android:text="START!" />
+        android:text="START!"
+        android:textColor="@color/whiteish"
+        android:textSize="24dp" />
 </RelativeLayout>
