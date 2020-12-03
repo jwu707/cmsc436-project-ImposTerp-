@@ -7,26 +7,97 @@
     android:textAlignment="center"
     tools:context=".Rooms">
 
-    <TextView
-        android:id="@+id/room_name"
-        android:text="Sample Text"
+    <RelativeLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:padding="8dp"
-        android:textAlignment="center"
         android:background="@color/blackish"
-        android:textColor="@color/whiteish"
-        android:fontFamily="@font/limelight"
-        />
+        >
+        <TextView
+            android:id="@+id/room_name"
+            android:text="Sample Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:padding="8dp"
+            android:textAlignment="center"
+
+            android:textColor="@color/whiteish"
+            android:fontFamily="@font/limelight"
+            />
+        <Button
+            android:id="@+id/leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:fontFamily="@font/limelight"
+            android:background="@color/blackish"
+            android:textColor="@color/whiteish"
+            android:textSize="24dp"
+            android:padding="8dp"
+            android:text="Leave" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/players_list_text"
         android:text="Players"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/room_name"
-        android:paddingLeft="16dp"
+        android:layout_below="@id/header"
+        android:textColor="@color/blackish"
+        android:fontFamily="@font/limelight"
+        android:textSize="16dp"
+        android:padding="16dp"
+        />
+
+    <GridLayout
+        android:id="@+id/players_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/players_list_text"
+        android:layout_centerHorizontal="true"
+        android:columnCount="5"
+        >
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/dummy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/edit_message"
+        />
+
+    <ListView
+        android:id="@+id/chat_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/players_grid"
+        android:layout_alignBottom="@id/dummy"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"
+        android:divider="@null"
+        />
+
+    <EditText
+        android:id="@+id/edit_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Send a message!"
+        android:layout_above="@id/begin"
+        android:fontFamily="@font/limelight"
+        />
+    <Button
+        android:id="@+id/send_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/edit_message"
+        android:layout_alignParentEnd="true"
+        android:background="@color/blackish"
+        android:textColor="@color/whiteish"
+        android:fontFamily="@font/limelight"
+        android:text="Send"
+        android:textSize="24dp"
         />
 
     <Button
@@ -40,22 +111,5 @@
         android:fontFamily="@font/limelight"
         android:textSize="24dp"
         />
-
-    <Button
-        android:id="@+id/leave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:fontFamily="@font/limelight"
-        android:text="Leave" />
-
-    <ListView
-        android:id="@+id/ListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/players_list_text">
-
-    </ListView>
 
 </RelativeLayout>

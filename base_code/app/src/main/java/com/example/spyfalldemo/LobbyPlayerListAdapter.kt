@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 
-class LobbyPlayerListAdapter(private val context: Activity, private var players: List<Player>, private val host : String) : ArrayAdapter<Player>(context,
+class LobbyPlayerListAdapter(private val context: Activity, private var players: List<Player>) : ArrayAdapter<Player>(context,
     R.layout.list_item_lobby_player, players) {
 
     @SuppressLint("InflateParams", "ViewHolder")
@@ -19,11 +19,7 @@ class LobbyPlayerListAdapter(private val context: Activity, private var players:
 
         val player = players[position]
 
-        if (player.id == host) {
-            textViewName.text = player.name + " (Host)"
-        } else {
-            textViewName.text = player.name
-        }
+        textViewName.text = player.name
 
         return listViewItem
     }

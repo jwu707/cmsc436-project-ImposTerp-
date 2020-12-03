@@ -10,4 +10,6 @@ data class Room(
     val inGame : Boolean = false,
     val spyWins : Boolean = false,
     val civilianWins : Boolean = false,
-    val players : HashMap<String, Player> = HashMap<String, Player>())
+    val players : HashMap<String, Player> = HashMap<String, Player>(),
+    val messages : HashMap<String, ChatMessage> = HashMap<String, ChatMessage>()
+    )

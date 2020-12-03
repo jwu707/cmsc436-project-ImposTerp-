@@ -27,6 +27,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/title"
         android:layout_above="@id/create"
+        android:divider="@null"
         />
 
     <Button

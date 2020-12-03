@@ -57,12 +57,10 @@ class Play : Activity(){
     private var votingThreshold : Int = 99
 
     private lateinit var players : MutableList<Player>
+    private lateinit var hostID : String
     private lateinit var spyID : String
     private var isHost : Boolean = false
     private var isSpy : Boolean = false
-
-    private var host = ""
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +79,6 @@ class Play : Activity(){
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
-        host = intent.getStringExtra("HOST").toString()
 
         players = ArrayList()
 
@@ -325,6 +322,7 @@ class Play : Activity(){
                             }
                         }
                         if (postSnapshot.key == "host") {
+                            hostID = postSnapshot.value.toString()
                             if (postSnapshot.value == playerID) {
                                 isHost = true
                             }

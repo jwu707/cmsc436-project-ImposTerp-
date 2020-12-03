@@ -26,7 +26,7 @@ class Rooms : Activity() {
     private lateinit var databaseRooms : DatabaseReference
     private lateinit var playerID : String
     private lateinit var playerName : String
-    private var host = ""
+    private lateinit var onChangeListenerRooms : ValueEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,6 @@ class Rooms : Activity() {
             val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
 
             txtRoomName.setText(playerName + "'s game")
-            host = playerID
 
             barPlayerCount.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
@@ -104,7 +103,6 @@ class Rooms : Activity() {
         val intent = Intent(applicationContext, Round::class.java)
         intent.putExtra("ROOM_ID", room.id)
         intent.putExtra("PLAYER_ID", playerID)
-        intent.putExtra("HOST", host)
         intent.putExtra("PLAYER_NAME", playerName)
         startActivity(intent)
         finish()
@@ -122,19 +120,14 @@ class Rooms : Activity() {
     override fun onStart() {
         super.onStart()
 
-        databaseRooms.addValueEventListener(object : ValueEventListener {
+        onChangeListenerRooms = databaseRooms.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 rooms.clear()
 
                 var room: Room? = null
                 for (postSnapshot in dataSnapshot.children) {
-                    try {
-                        room = postSnapshot.getValue(Room::class.java)
-                    } catch (e: Exception) {
-
-                    } finally {
-                        rooms.add(room!!)
-                    }
+                    room = postSnapshot.getValue(Room::class.java)
+                    rooms.add(room!!)
                 }
 
                 var adapter = RoomListAdapter(this@Rooms, rooms)
@@ -145,5 +138,10 @@ class Rooms : Activity() {
 
             }
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        databaseRooms.removeEventListener(onChangeListenerRooms)
     }
 }

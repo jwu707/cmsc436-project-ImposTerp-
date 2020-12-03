@@ -17,7 +17,10 @@ import java.lang.Exception
 import java.util.ArrayList
 
 class Round : Activity(){
-    private lateinit var listView: ListView
+    private lateinit var grdPlayers: GridLayout
+    private lateinit var lstChatLog: ListView
+    private lateinit var btnSendMessage : Button
+    private lateinit var edtEditMessage : EditText
     private lateinit var txtRoomName : TextView
     private lateinit var btnStart: Button
     private lateinit var btnLeave: Button
@@ -27,8 +30,11 @@ class Round : Activity(){
     private lateinit var roomID : String
     private lateinit var databaseRoom: DatabaseReference
     private lateinit var databaseRoomPlayers: DatabaseReference
-    private lateinit var databaseRoomLeave: DatabaseReference
-    private var host = ""
+    private lateinit var databaseRoomChatLog: DatabaseReference
+    private lateinit var onChangeListenerRoom : ValueEventListener
+    private lateinit var onChangeListenerPlayers : ValueEventListener
+    private lateinit var onChangeListenerChatLog : ValueEventListener
+    private lateinit var hostID : String
 
     private val locationsArray = arrayOf("Beach", "School", "Airport", "Park", "Gym")
 
@@ -36,7 +42,10 @@ class Round : Activity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting)
 
-        listView = findViewById(R.id.ListView)
+        grdPlayers = findViewById(R.id.players_grid)
+        lstChatLog = findViewById(R.id.chat_log)
+        edtEditMessage = findViewById(R.id.edit_message)
+        btnSendMessage = findViewById(R.id.send_message)
         btnStart = findViewById(R.id.begin)
         btnLeave = findViewById(R.id.leave)
         txtRoomName = findViewById(R.id.room_name)
@@ -44,26 +53,24 @@ class Round : Activity(){
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
-        host = intent.getStringExtra("HOST").toString()
 
         players = ArrayList()
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
         databaseRoomPlayers = databaseRoom.child("players")
+        databaseRoomChatLog = databaseRoom.child("messages")
 
-        btnLeave.setOnClickListener(View.OnClickListener {
-            if (host == playerID){
+        btnLeave.setOnClickListener{
+            if (hostID == playerID){
                 databaseRoom.child("finished").setValue(true)
             }else {
-                databaseRoomLeave = databaseRoomPlayers.child(playerID)
-                databaseRoomLeave.removeValue()
-                val backLobby = Intent(applicationContext, Rooms::class.java)
-                backLobby.putExtra("PLAYER_ID", playerID)
-                backLobby.putExtra("PLAYER_NAME", playerName)
-                startActivity(backLobby)
+                // remove the player from the list of players
+                databaseRoomPlayers.child(playerID).removeValue()
+                leaveRoom()
+                sendMessage("", playerName + " has left the game!")
             }
-        })
+        }
 
-        btnStart.setOnClickListener(View.OnClickListener {
+        btnStart.setOnClickListener{
             if(players.size <= 1){
                 Toast.makeText(applicationContext, "Waiting for for more players...", Toast.LENGTH_SHORT).show()
             } else {
@@ -89,7 +96,21 @@ class Round : Activity(){
                 databaseRoom.child("location").setValue(location)
                 databaseRoom.child("spy").setValue(spyID)
             }
-        })
+        }
+
+        btnSendMessage.setOnClickListener{
+            val msg = edtEditMessage.text.toString()
+            sendMessage(playerName, msg)
+            edtEditMessage.setText("")
+        }
+    }
+
+    private fun sendMessage(sender : String, content : String) {
+        // make sure message is not blank
+        if (content != "") {
+            val msg = ChatMessage(sender, content)
+            databaseRoomChatLog.push().setValue(msg)
+        }
     }
 
     private fun generateGameInfo() {
@@ -100,111 +121,127 @@ class Round : Activity(){
         val intent = Intent(applicationContext, Play::class.java)
         intent.putExtra("ROOM_ID", roomID)
         intent.putExtra("PLAYER_ID", playerID)
-        intent.putExtra("HOST", host)
         intent.putExtra("PLAYER_NAME", playerName)
         startActivity(intent)
         finish()
     }
 
+    private fun leaveRoom() {
+        val backLobby = Intent(applicationContext, Rooms::class.java)
+        backLobby.putExtra("PLAYER_ID", playerID)
+        backLobby.putExtra("PLAYER_NAME", playerName)
+        startActivity(backLobby)
+    }
+
     override fun onStart() {
         super.onStart()
 
-        databaseRoom.addValueEventListener(object : ValueEventListener {
+        onChangeListenerRoom = databaseRoom.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //make sure to update before staring//
                 var gameStat = false
-                var locStat = false
-                var spyStat = false
 
                 for (postSnapshot in dataSnapshot.children) {
-                    try {
-                        if (postSnapshot.key == "inGame") {
-                            if (postSnapshot.value as Boolean) {
-                                gameStat = true
-                            }
+                    if (postSnapshot.key == "inGame") {
+                        if (postSnapshot.value as Boolean) {
+                            gameStat = true
                         }
-                        if (postSnapshot.key == "host") {
-                            if (postSnapshot.value != playerID) {
-                                btnStart.visibility = View.GONE
-                            }
+                    }
+                    if (postSnapshot.key == "host") {
+                        hostID = postSnapshot.value.toString()
+                        if (postSnapshot.value != playerID) {
+                            btnStart.visibility = View.GONE
+                            var params = edtEditMessage.layoutParams as RelativeLayout.LayoutParams
+                            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                            edtEditMessage.layoutParams = params
                         }
-                        if (postSnapshot.key == "name") {
-                            txtRoomName.text = postSnapshot.value.toString()
-                        }
-                        if (postSnapshot.key == "finished"){
-                            if (postSnapshot.value as Boolean){
-                                databaseRoom.removeValue()
-                                Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
-                                val backLobby = Intent(applicationContext, Rooms::class.java)
-                                backLobby.putExtra("PLAYER_ID", playerID)
-                                backLobby.putExtra("PLAYER_NAME", playerName)
-                                startActivity(backLobby)
-                            }
-                        }
+                    }
+                    if (postSnapshot.key == "name") {
+                        txtRoomName.text = postSnapshot.value.toString()
+                    }
 
-                        /*
-                        if (postSnapshot.key == "location"){
-                            if (postSnapshot.value != ""){
-                                loc = postSnapshot.value.toString()
-                                locStat = true
-                            }
+                    if (postSnapshot.key == "finished"){
+                        if (postSnapshot.value as Boolean){
+                            databaseRoom.removeValue()
+                            Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
+                            leaveRoom()
                         }
-                        if (postSnapshot.key == "spy"){
-                            if (postSnapshot.value != ""){
-                                spy = postSnapshot.value.toString()
-                                spyStat = true
-                            }
-                        }
-                        */
-                    } catch (e: Exception) {
-
-                    } finally {
-
                     }
                 }
-                if (gameStat/* && locStat && spySta*/){
+                if (gameStat){
                     startGame()
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
-
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
 
-        databaseRoomPlayers.addValueEventListener(object : ValueEventListener {
+        onChangeListenerChatLog = databaseRoomChatLog.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var messages: MutableList<ChatMessage> = ArrayList()
+                var message: ChatMessage? = null
+                for (postSnapshot in dataSnapshot.children) {
+                    message = postSnapshot.getValue(ChatMessage::class.java)
+                    messages.add(message!!)
+                }
+                var adapter = ChatLogAdapter(this@Round, messages)
+                lstChatLog.adapter = adapter
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        onChangeListenerPlayers = databaseRoomPlayers.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (databaseRoom == null){
-                    val backLobby = Intent(applicationContext, Rooms::class.java)
-                    startActivity(backLobby)
+                    leaveRoom()
                 } else {
                     players.clear()
-
-                    var host: String = ""
                     var player: Player? = null
                     for (postSnapshot in dataSnapshot.children) {
-                        // set host id in ondatachanged above?
-                        if (postSnapshot.key == "host") {
-                            host = postSnapshot.value.toString()
-                        }
-
-                        try {
-                            player = postSnapshot.getValue(Player::class.java)
-                        } catch (e: Exception) {
-
-                        } finally {
-                            players.add(player!!)
-                        }
+                        player = postSnapshot.getValue(Player::class.java)
+                        players.add(player!!)
                     }
 
-                    var adapter = LobbyPlayerListAdapter(this@Round, players, host)
-                    listView.adapter = adapter
-
+                    populatePlayersGrid()
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
-
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
+
+        sendMessage("", playerName + " has joined the game!")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        databaseRoom.removeEventListener(onChangeListenerRoom)
+        databaseRoomPlayers.removeEventListener(onChangeListenerPlayers)
+        databaseRoomChatLog.removeEventListener(onChangeListenerChatLog)
+    }
+
+    private fun populatePlayersGrid() {
+        // reset layout
+        grdPlayers.removeAllViews()
+
+        for(i in players.indices) {
+            val player = players[i]
+            val plate = layoutInflater.inflate(R.layout.plate, null)
+            var textView = plate.findViewById<TextView>(R.id.plate_text)
+            // funny business
+            if (player.id == playerID) {
+                // hostID is sometimes null because onDataChange is asynchronous
+                //if (player.id == hostID) {
+                    //textView.text = "[Host] " + player.name + " (You!)"
+                //} else {
+                    textView.text = player.name + " (You!)"
+                //}
+            } else {
+                textView.text = player.name
+            }
+
+            grdPlayers.addView(plate)
+
+        }
     }
 }
