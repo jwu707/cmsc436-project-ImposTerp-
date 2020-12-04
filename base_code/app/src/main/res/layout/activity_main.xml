@@ -8,6 +8,7 @@
     tools:context=".MainActivity"
 
     >
+
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
@@ -16,6 +17,32 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/space"
         />
+
+    <Button
+        android:id="@+id/rules"
+        android:layout_width="99dp"
+        android:layout_height="38dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="73dp"
+        android:layout_marginBottom="154dp"
+        android:background="@color/blackish"
+        android:fontFamily="@font/limelight"
+        android:text="Rules"
+        android:textColor="@color/whiteish"
+        android:textSize="20dp" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="269dp"
+        android:layout_height="288dp"
+
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="404dp"
+        android:layout_marginBottom="8dp"
+        app:srcCompat="@drawable/vines" />
 
     <TextView
         android:id="@+id/title"
@@ -32,7 +59,7 @@
         android:text="TERPFALL"
         android:textAlignment="center"
         android:textColor="@color/whiteish"
-        android:textSize="48dp" />
+        android:textSize="70dp" />
 
     <EditText
         android:id="@+id/name"
@@ -61,4 +88,32 @@
         android:text="START!"
         android:textColor="@color/whiteish"
         android:textSize="24dp" />
+
+    <Button
+        android:id="@+id/credits"
+        android:layout_width="113dp"
+        android:layout_height="38dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="65dp"
+        android:layout_marginBottom="88dp"
+        android:background="@color/blackish"
+        android:fontFamily="@font/limelight"
+        android:text="Credits"
+        android:textColor="@color/whiteish"
+        android:textSize="20dp" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="350dp"
+        android:layout_height="517dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="43dp"
+        app:srcCompat="@drawable/top_main" />
+
 </RelativeLayout>

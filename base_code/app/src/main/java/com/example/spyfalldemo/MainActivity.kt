@@ -2,6 +2,7 @@ package com.example.spyfalldemo
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -41,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     private var mDisplayWidth: Int = 0
     private var mDisplayHeight: Int = 0
 
+    private lateinit var btnRules : Button
+    private lateinit var btnCredits : Button
+    private var noReset = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,14 +55,48 @@ class MainActivity : AppCompatActivity() {
 
         btnStart = findViewById(R.id.start)
         edtName = findViewById(R.id.name)
+        btnCredits = findViewById(R.id.credits)
+        btnRules = findViewById(R.id.rules)
 
         databasePlayers = FirebaseDatabase.getInstance().getReference("players")
 
         btnStart.setOnClickListener{ btnStartPress()}
+        btnRules.setOnClickListener{btnRulesPress()}
+        btnCredits.setOnClickListener{btnCreditPress()}
 
         mFrame = (findViewById(R.id.frame) as FrameLayout)
     }
 
+    private fun btnCreditPress() {
+        val build = AlertDialog.Builder(this)
+        noReset = false
+        build.setTitle("Credits")
+        build.setMessage("Group 4:\nJesie Wu\nJason Yuen\nJohn Luo")
+        build.setPositiveButton("OK", DialogInterface.OnClickListener{
+                dialog, id -> dialog.cancel()
+
+        })
+        val alertBuild = build.create()
+        alertBuild.show()
+    }
+
+
+    private fun btnRulesPress() {
+        val build = AlertDialog.Builder(this)
+        noReset = false
+        build.setTitle("Rules")
+        build.setMessage("The spy:\ntry to guess the round's location. Infer from others' questions and answers.\n\n"
+                + "Other players:\nfigure out who the spy is.\n\n"
+                + "The location:\nround starts, each player is given a location card. The location is the same for all players (e.g., the bank) except for one player, who is randomly given the \"spy\" card. The spy does not know the round's location.\n\n"
+                + "Questioning:\nthe game leader (person who started the game) begins by questioning another player about the location. Example: (\"is this a place where children are welcome?\").\n\n"
+                + "Answering:\nthe questioned player must answer. No follow up questions allowed. After they answer, it's then their turn to ask someone else a question. This continues until round is over.\n\n"
+                + "No retaliation questions:\nif someone asked you a question for their turn, you cannot then immediately ask them a question back for your turn. You must choose someone else.\n\n")
+        build.setPositiveButton("Got it", DialogInterface.OnClickListener{
+                dialog, id -> dialog.cancel()
+        })
+        val alertBuild = build.create()
+        alertBuild.show()
+    }
 
     private fun btnStartPress() {
         // set player name and clear EditText view
@@ -86,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
+        if (hasFocus&&noReset) {
 
             // Get the size of the display so this View knows where borders are
             mDisplayWidth = mFrame!!.width

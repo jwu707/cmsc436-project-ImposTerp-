@@ -14,6 +14,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.CountDownTimer
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
@@ -41,6 +42,7 @@ class Play : Activity(){
     private lateinit var btnSendMessage : Button
     private lateinit var txtRole : TextView
     private lateinit var txtLocation : TextView
+    private lateinit var timer : TextView
     private lateinit var grdLocations : GridLayout
     private lateinit var grdPlayers : GridLayout
     private lateinit var icon: ImageView
@@ -57,6 +59,7 @@ class Play : Activity(){
     private var votingThreshold : Int = 99
     private var isHost : Boolean = false
     private var isSpy : Boolean = false
+    private lateinit var countDown : CountDownTimer
 
     private val icons = arrayOf(R.drawable.bee, R.drawable.top_hat, R.drawable.tu_tu, R.drawable.nerd, R.drawable.pirate)
 
@@ -77,6 +80,7 @@ class Play : Activity(){
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
+        var milisec = intent.getStringExtra("TIME").toString().toLong()
 
         players = ArrayList()
         playersMap = HashMap<String, Player>()
@@ -88,9 +92,28 @@ class Play : Activity(){
 
         grdLocations = findViewById(R.id.locations_grid)
         grdPlayers = findViewById(R.id.players_grid)
+        timer = findViewById(R.id.timer_val)
+
+        milisec = (milisec*60000)
+
+        countDown = object: CountDownTimer(milisec, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                milisec = millisUntilFinished
+                val min = milisec/60000
+                val sec = (milisec%60000) / 1000
+                timer.text = "$min:$sec"
+            }
+            override fun onFinish() {
+                spyWinsAlert()
+            }
+        }
+        countDown.start()
+
+
 
         btnLeave.setOnClickListener{
             if (hostID == playerID){
+                databaseRoom.child("finished").setValue(true)
                 databaseRoom.child("finished").setValue(true)
             }else {
                 // remove the player from the list of players
@@ -157,13 +180,14 @@ class Play : Activity(){
 
         message.text = "Vote " + textView.text.toString() + " as the spy?"
 
+
+        val b = dialogBuilder.create()
         btnYes.setOnClickListener{
             val other = players[index]
             databaseRoomPlayers.child(playerID).child("vote").setValue(other.id)
             sendMessage("", playerName + " votes that " + other.name + " is the spy!")
+            b.dismiss()
         }
-
-        val b = dialogBuilder.create()
         b.show()
     }
 
@@ -198,13 +222,13 @@ class Play : Activity(){
 
         message.text = "Guess " + textView.text.toString() + "?"
 
+        val b = dialogBuilder.create()
         btnYes.setOnClickListener{
             val guess = Round.locations[index]
             sendMessage("", "The spy has guess the location: $guess")
             guessLocation(guess)
+            b.dismiss()
         }
-
-        val b = dialogBuilder.create()
         b.show()
     }
 
@@ -245,6 +269,7 @@ class Play : Activity(){
     }
 
     private fun spyWinsAlert() {
+        countDown.cancel()
         val dialogBuilder = AlertDialog.Builder(this)
         val dialogView = layoutInflater.inflate(R.layout.generic_confirm_dialog, null)
         dialogBuilder.setView(dialogView)
@@ -255,15 +280,17 @@ class Play : Activity(){
         message.text = "The spy wins!"
         btnYes.text = "Back to Lobby"
 
-        btnYes.setOnClickListener{
-            backToLobby()
-        }
 
         val b = dialogBuilder.create()
+        btnYes.setOnClickListener{
+            backToLobby()
+            b.dismiss()
+        }
         b.show()
     }
 
     private fun civilianWinsAlert() {
+        countDown.cancel()
         val dialogBuilder = AlertDialog.Builder(this)
         val dialogView = layoutInflater.inflate(R.layout.generic_confirm_dialog, null)
         dialogBuilder.setView(dialogView)
@@ -274,11 +301,12 @@ class Play : Activity(){
         message.text = "The civilians win!"
         btnYes.text = "Back to Lobby"
 
+        val b = dialogBuilder.create()
         btnYes.setOnClickListener{
             backToLobby()
+            b.dismiss()
         }
 
-        val b = dialogBuilder.create()
         b.show()
     }
 
@@ -375,6 +403,12 @@ class Play : Activity(){
                     }
                     if (postSnapshot.key == "location") {
                         location = postSnapshot.value.toString()
+                    }
+                    if (postSnapshot.key == "finished"){
+                        if (postSnapshot.value == true){
+                            leaveRoom()
+                            Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
 

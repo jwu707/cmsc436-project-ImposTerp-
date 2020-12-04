@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:textAlignment="center"
+    android:background="@drawable/space"
     tools:context=".Rooms">
 
     <TextView
@@ -24,11 +25,14 @@
     <ListView
         android:id="@+id/ListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/title"
+        android:layout_height="525dp"
         android:layout_above="@id/create"
-        android:divider="@null"
-        />
+        android:layout_below="@id/title"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="38dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="75dp"
+        android:divider="@null" />
 
     <Button
         android:id="@+id/create"
@@ -40,6 +44,28 @@
         android:text="Create New Lobby"
         android:fontFamily="@font/limelight"
         android:textSize="24dp"/>
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="136dp"
+        android:layout_height="151dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="272dp"
+        android:layout_marginBottom="4dp"
+        android:src="@drawable/host" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="114dp"
+        android:layout_height="108dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-7dp"
+        android:layout_marginEnd="-12dp"
+        android:src="@drawable/join" />
 
 
 </RelativeLayout>

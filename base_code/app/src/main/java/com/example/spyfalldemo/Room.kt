@@ -11,5 +11,6 @@ data class Room(
     val spyWins : Boolean = false,
     val civilianWins : Boolean = false,
     val players : HashMap<String, Player> = HashMap<String, Player>(),
-    val messages : HashMap<String, ChatMessage> = HashMap<String, ChatMessage>()
+    val messages : HashMap<String, ChatMessage> = HashMap<String, ChatMessage>(),
+    var time : Int = 0
     )

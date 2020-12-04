@@ -28,6 +28,8 @@ class Rooms : Activity() {
     private lateinit var playerName : String
     private lateinit var onChangeListenerRooms : ValueEventListener
 
+    private var timer = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room)
@@ -52,6 +54,8 @@ class Rooms : Activity() {
             val lblPlayerCount = dialogView.findViewById<View>(R.id.player_count_num) as TextView
             val barPlayerCount = dialogView.findViewById<View>(R.id.player_count_seekbar) as SeekBar
             val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
+            val time = dialogView.findViewById<View>(R.id.time) as TextView
+            val time_seekbar = dialogView.findViewById<View>(R.id.time_seekbar) as SeekBar
 
             txtRoomName.setText(playerName + "'s game")
 
@@ -63,6 +67,17 @@ class Rooms : Activity() {
                 override fun onStartTrackingTouch(seek: SeekBar) {}
                 override fun onStopTrackingTouch(seek: SeekBar) {}
             })
+
+            time_seekbar.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
+                    time.text = (progress + 1).toString()
+                    timer = progress + 1
+                }
+                override fun onStartTrackingTouch(seek: SeekBar) {}
+                override fun onStopTrackingTouch(seek: SeekBar) {}
+            })
+
 
             btnConfirm.setOnClickListener{
                 val num = barPlayerCount.progress + 3
@@ -106,6 +121,10 @@ class Rooms : Activity() {
         val id = databaseRooms.push().key
         val room = Room(id!!, roomName, playerCount, playerID)
         room.players[playerID] = Player(playerID, playerName)
+        if (timer == 0){
+            timer = 1
+        }
+        room.time = timer
         databaseRooms.child(id).setValue(room)
 
         joinRoom(room)

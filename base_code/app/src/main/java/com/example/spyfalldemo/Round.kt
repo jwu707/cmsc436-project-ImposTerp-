@@ -36,6 +36,7 @@ class Round : Activity(){
     private lateinit var onChangeListenerChatLog : ValueEventListener
     private lateinit var hostID : String
     private lateinit var roles : HashMap<String, MutableList<String>>
+    private var timer = ""
 
     companion object {
         const val MIN_PLAYERS = 2
@@ -153,6 +154,7 @@ class Round : Activity(){
         intent.putExtra("ROOM_ID", roomID)
         intent.putExtra("PLAYER_ID", playerID)
         intent.putExtra("PLAYER_NAME", playerName)
+        intent.putExtra("TIME", timer)
         startActivity(intent)
         finish()
     }
@@ -197,6 +199,10 @@ class Round : Activity(){
                             Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
                             leaveRoom()
                         }
+                    }
+
+                    if (postSnapshot.key == "time"){
+                        timer = postSnapshot.value.toString()
                     }
                 }
                 if (gameStat){
