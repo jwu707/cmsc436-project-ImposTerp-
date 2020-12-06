@@ -42,13 +42,29 @@ class Round : Activity(){
         const val MIN_PLAYERS = 2
 
         //!!!!!!!!!!!make sure the role sizes are consistent! right now there's FIVE roles!!!!!!!!!!!!!!!//
-        val locations = arrayOf("Beach", "School", "Airport", "Park", "Gym")
-        val beachRoles = mutableListOf("Lifeguard", "Tourists", "Sea Monster", "Child", "Food Vendor", "Role6", "Role7", "Role8", "Role9")
-        val schoolRoles = mutableListOf("Student", "Teacher", "Janitor", "Librarian", "Principal", "Role6", "Role7", "Role8", "Role9")
-        val airportRoles = mutableListOf("Security", "Flight Attendant", "Pilot", "Crying Baby", "Lost Child", "Role6", "Role7", "Role8", "Role9")
-        val parkRoles = mutableListOf("Dog", "Tree", "Bench", "Photographer", "Painter", "Role6", "Role7", "Role8", "Role9")
-        val gymRoles = mutableListOf("Body Builder", "Trainer", "Weak Potato", "Yoga Instructor", "Boxer", "Role6", "Role7", "Role8", "Role9")
-        val colors = mutableListOf("#ffffff","#000000","#ff0000","#0000ff","#00ff00","#000000","#f0f0f0","#0f0f0f","#121212","#343434")
+        val locations = arrayOf(
+            "The Stamp",
+            "Iribe Center",
+            "Capital One Field",
+            "Eppley Rec. Center",
+            "McKeldin Library",
+            "McKeldin Mall",
+            "Marathon Deli",
+            "South Campus Dining Hall",
+            "The Varsity",
+            "Memorial Chapel"
+        )
+        val stampRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val iribeRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val fieldRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val eppleyRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val libraryRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val mallRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val deliRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val diningRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val varsityRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val chapelRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
+        val colors = mutableListOf("#bf0000","#d97b00","#0f0f0f","#00d9d9","#0045d9","#7000d9","#ce00d9","#6b6b6b","#00d92f","#d9d500")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,13 +84,16 @@ class Round : Activity(){
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
 
         roles = HashMap<String, MutableList<String>>()
-        roles["Beach"] = beachRoles
-        roles["School"] = schoolRoles
-        roles["Airport"] = airportRoles
-        roles["Park"] = parkRoles
-        roles["Gym"] = gymRoles
-        //val randRole = (roles.indices).random()
-        //roles[location]!![randRole].toString()
+        roles["The Stamp"] = stampRoles
+        roles["Iribe Center"] = iribeRoles
+        roles["Capital One Field"] = fieldRoles
+        roles["Eppley Rec. Center"] = eppleyRoles
+        roles["McKeldin Library"] = libraryRoles
+        roles["McKeldin Mall"] = mallRoles
+        roles["Marathon Deli"] = deliRoles
+        roles["South Campus Dining Hall"] = diningRoles
+        roles["The Varsity"] = varsityRoles
+        roles["Memorial Chapel"] = chapelRoles
 
         players = ArrayList()
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
