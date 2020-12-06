@@ -13,18 +13,22 @@
         android:layout_height="wrap_content"
         android:background="@color/blackish"
         >
+
         <TextView
             android:id="@+id/room_name"
-            android:text="Sample Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24dp"
-            android:padding="8dp"
-            android:textAlignment="center"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toStartOf="@+id/leave"
 
-            android:textColor="@color/whiteish"
             android:fontFamily="@font/limelight"
-            />
+            android:padding="8dp"
+            android:text="Sample Text"
+            android:textAlignment="center"
+            android:textColor="@color/whiteish"
+            android:textSize="24dp" />
         <Button
             android:id="@+id/leave"
             android:layout_width="wrap_content"
@@ -84,6 +88,7 @@
         android:id="@+id/edit_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/send_message"
         android:hint="Send a message!"
         android:layout_above="@id/begin"
         android:fontFamily="@font/limelight"
