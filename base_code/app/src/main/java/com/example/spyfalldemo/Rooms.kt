@@ -157,4 +157,12 @@ class Rooms : Activity() {
         super.onPause()
         databaseRooms.removeEventListener(onChangeListenerRooms)
     }
+//    @Override
+//    override fun onBackPressed()
+//    {
+//        val backMain = Intent(applicationContext, MainActivity::class.java)
+//        FirebaseDatabase.getInstance().getReference("players").child(playerID).removeValue()
+//        startActivity(backMain)
+//        finish()
+//    }
 }

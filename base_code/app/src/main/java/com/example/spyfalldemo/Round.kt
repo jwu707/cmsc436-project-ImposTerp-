@@ -183,6 +183,7 @@ class Round : Activity(){
         backLobby.putExtra("PLAYER_ID", playerID)
         backLobby.putExtra("PLAYER_NAME", playerName)
         startActivity(backLobby)
+        finish()
     }
 
     override fun onStart() {
@@ -298,6 +299,20 @@ class Round : Activity(){
 
             grdPlayers.addView(plate)
 
+        }
+
+
+    }
+    @Override
+    override fun onBackPressed()
+    {
+        if (hostID == playerID){
+            databaseRoom.child("finished").setValue(true)
+        }else {
+            // remove the player from the list of players
+            databaseRoomPlayers.child(playerID).removeValue()
+            leaveRoom()
+            sendMessage("", playerName + " has left the game!")
         }
     }
 }
