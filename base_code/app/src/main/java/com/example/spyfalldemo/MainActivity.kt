@@ -66,34 +66,50 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun btnCreditPress() {
-        val build = AlertDialog.Builder(this)
         noReset = false
-        build.setTitle("Credits")
-        build.setMessage("Group 4:\nJesie Wu\nJason Yuen\nJohn Luo")
-        build.setPositiveButton("OK", DialogInterface.OnClickListener{
-                dialog, id -> dialog.cancel()
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.generic_confirm_dialog, null)
+        dialogBuilder.setView(dialogView)
 
-        })
-        val alertBuild = build.create()
-        alertBuild.show()
+        val txtHeader = dialogView.findViewById(R.id.header) as TextView
+        val txtMessage = dialogView.findViewById(R.id.message) as TextView
+        val btnBack = dialogView.findViewById(R.id.yes) as Button
+
+        txtHeader.text = "Credits"
+        txtMessage.setText(R.string.credits)
+        btnBack.text = "Close"
+
+        val b = dialogBuilder.create()
+        btnBack.setOnClickListener{
+            b.dismiss()
+        }
+        b.show()
     }
 
 
     private fun btnRulesPress() {
-        val build = AlertDialog.Builder(this)
         noReset = false
-        build.setTitle("Rules")
-        build.setMessage("The spy:\ntry to guess the round's location. Infer from others' questions and answers.\n\n"
-                + "Other players:\nfigure out who the spy is.\n\n"
-                + "The location:\nround starts, each player is given a location card. The location is the same for all players (e.g., the bank) except for one player, who is randomly given the \"spy\" card. The spy does not know the round's location.\n\n"
-                + "Questioning:\nthe game leader (person who started the game) begins by questioning another player about the location. Example: (\"is this a place where children are welcome?\").\n\n"
-                + "Answering:\nthe questioned player must answer. No follow up questions allowed. After they answer, it's then their turn to ask someone else a question. This continues until round is over.\n\n"
-                + "No retaliation questions:\nif someone asked you a question for their turn, you cannot then immediately ask them a question back for your turn. You must choose someone else.\n\n")
-        build.setPositiveButton("Got it", DialogInterface.OnClickListener{
-                dialog, id -> dialog.cancel()
-        })
-        val alertBuild = build.create()
-        alertBuild.show()
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.generic_confirm_dialog, null)
+        dialogBuilder.setView(dialogView)
+
+        val txtHeader = dialogView.findViewById(R.id.header) as TextView
+        val txtMessage = dialogView.findViewById(R.id.message) as TextView
+        val btnBack = dialogView.findViewById(R.id.yes) as Button
+
+        txtHeader.text = "Rules"
+        txtMessage.setText(R.string.rules)
+        txtMessage.textSize = 16F
+        txtMessage.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+        btnBack.text = "Close"
+
+        val b = dialogBuilder.create()
+        btnBack.setOnClickListener{
+            b.dismiss()
+        }
+        b.show()
     }
 
     private fun btnStartPress() {
@@ -102,7 +118,6 @@ class MainActivity : AppCompatActivity() {
         edtName.text.clear()
 
         if (username != "") {
-            btnStart.text = "LOADING..."
             btnStart.isEnabled = false
 
             val id = databasePlayers.push().key
@@ -134,7 +149,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                btnStart.text = "START!"
                 btnStart.isEnabled = true
             }
         })

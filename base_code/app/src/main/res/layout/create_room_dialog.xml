@@ -26,6 +26,7 @@
             android:layout_below="@id/title"
             android:fontFamily="@font/limelight"
             android:hint="Lobby Name"
+            android:inputType="textPersonName"
             />
         <EditText
             android:id="@+id/password"
@@ -34,6 +35,7 @@
             android:layout_below="@id/room_name"
             android:fontFamily="@font/limelight"
             android:hint="Password (None if blank)"
+            android:inputType="textPassword"
             />
 
         <RelativeLayout

@@ -6,6 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/space"
+        />
+
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -39,146 +46,168 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/info"
+        android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/header"
-        android:padding="8dp">
-        <!--
-        <ImageView
-            android:id="@+id/role_icon"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            />-->
-        <TextView
-            android:id="@+id/role"
-            android:layout_width="wrap_content"
+        android:background="#66F0F0F0">
+        <RelativeLayout
+            android:id="@+id/info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sample Text"
-            android:fontFamily="@font/limelight"
-            android:textColor="@color/blackish"
-            android:textSize="24dp"
-            />
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
+            android:padding="8dp"
+            >
+            <TextView
+                android:id="@+id/role"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sample Text"
+                android:fontFamily="@font/limelight"
+                android:textColor="@color/blackish"
+                android:textSize="24dp"
+                />
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/role"
+                android:fontFamily="@font/limelight"
+                android:textColor="@color/blackish"
+                android:text="Sample Text"
+                android:textSize="24dp"/>
+            <TextView
+                android:id="@+id/timer_text"
+                android:text="Time Remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/location"
+                android:layout_alignLeft="@id/location"
+                android:textColor="@color/blackish"
+                android:fontFamily="@font/limelight"
+                android:textSize="24dp"
+                />
+            <TextView
+                android:id="@+id/timer_val"
+                android:text="00:00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/timer_text"
+                android:layout_alignLeft="@id/location"
+                android:textColor="@color/blackish"
+                android:fontFamily="@font/limelight"
+                android:textSize="24dp"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/actions"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/role"
-            android:fontFamily="@font/limelight"
-            android:text="Sample Text"
-            android:textSize="24dp" />
-        <TextView
-            android:id="@+id/timer_text"
-            android:text="Time Remaining"
-            android:layout_width="wrap_content"
+            android:layout_below="@id/info">
+
+            <TextView
+                android:id="@+id/player_grid_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/limelight"
+                android:textAlignment="center"
+                android:text="Players"
+                android:textSize="16dp"
+                android:textColor="@color/blackish"
+                />
+            <GridLayout
+                android:id="@+id/players_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/player_grid_text"
+                android:layout_centerHorizontal="true"
+                android:columnCount="5"
+                >
+            </GridLayout>
+
+            <TextView
+                android:id="@+id/locations_grid_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/limelight"
+                android:layout_below="@id/players_grid"
+                android:textAlignment="center"
+                android:text="Locations"
+                android:textSize="16dp"
+                android:textColor="@color/blackish"
+                />
+            <GridLayout
+                android:id="@+id/locations_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/locations_grid_text"
+                android:layout_centerHorizontal="true"
+                android:columnCount="3"
+                >
+            </GridLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/chat_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/location"
-            android:layout_alignLeft="@id/location"
-            android:textColor="@color/blackish"
-            android:fontFamily="@font/limelight"
-            android:textSize="24dp"
-            />
-        <TextView
-            android:id="@+id/timer_val"
-            android:text="00:00"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/timer_text"
-            android:layout_alignLeft="@id/location"
-            android:textColor="@color/blackish"
-            android:fontFamily="@font/limelight"
-            android:textSize="24dp"
-            />
+            android:layout_below="@id/actions">
+            <ListView
+                android:id="@+id/chat_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/edit_message"
+                android:transcriptMode="alwaysScroll"
+                android:stackFromBottom="true"
+                android:divider="@null"
+                />
+
+            <TextView
+                android:id="@+id/dummy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/edit_message"
+                />
+
+            <EditText
+                android:id="@+id/edit_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_toLeftOf="@id/send_message"
+                android:fontFamily="@font/limelight"
+                android:hint="Send a message!" />
+            <Button
+                android:id="@+id/send_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/edit_message"
+                android:layout_alignParentEnd="true"
+                android:background="@color/blackish"
+                android:textColor="@color/whiteish"
+                android:fontFamily="@font/limelight"
+                android:text="Send"
+                android:textSize="24dp"
+                />
+
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/actions"
+        android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/info"
+        android:layout_height="match_parent"
+        android:background="#AA0F0F0F"
+        android:visibility="gone"
         >
-
-        <TextView
-            android:id="@+id/player_grid_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/limelight"
-            android:textAlignment="center"
-            android:text="Players"
-            android:textSize="16dp"
-            android:textColor="@color/blackish"
-            />
-        <GridLayout
-            android:id="@+id/players_grid"
+        <ImageView
+            android:id="@+id/splashart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/player_grid_text"
-            android:layout_centerHorizontal="true"
-            android:columnCount="5"
-            >
-        </GridLayout>
-
-        <TextView
-            android:id="@+id/locations_grid_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/limelight"
-            android:layout_below="@id/players_grid"
-            android:textAlignment="center"
-            android:text="Locations"
-            android:textSize="16dp"
-            android:textColor="@color/blackish"
+            android:layout_centerInParent="true"
             />
-        <GridLayout
-            android:id="@+id/locations_grid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/locations_grid_text"
-            android:layout_centerHorizontal="true"
-            android:columnCount="3"
-            >
-        </GridLayout>
     </RelativeLayout>
-
-    <ListView
-        android:id="@+id/chat_log"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/actions"
-        android:layout_alignBottom="@id/dummy"
-        android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="true"
-        android:divider="@null"
-        />
-
-    <TextView
-        android:id="@+id/dummy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/edit_message"
-        />
-
-    <EditText
-        android:id="@+id/edit_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="0dp"
-        android:layout_toLeftOf="@id/send_message"
-        android:fontFamily="@font/limelight"
-        android:hint="Send a message!" />
-    <Button
-        android:id="@+id/send_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/edit_message"
-        android:layout_alignParentEnd="true"
-        android:background="@color/blackish"
-        android:textColor="@color/whiteish"
-        android:fontFamily="@font/limelight"
-        android:text="Send"
-        android:textSize="24dp"
-        />
 
 </RelativeLayout>

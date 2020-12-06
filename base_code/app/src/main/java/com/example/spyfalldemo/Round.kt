@@ -42,23 +42,23 @@ class Round : Activity(){
 
         //!!!!!!!!!!!make sure the role sizes are consistent! right now there's FIVE roles!!!!!!!!!!!!!!!//
         val locations = arrayOf(
-            "The Stamp",
-            "Iribe",
             "Capital One Field",
-            "Eppley",
-            "McKeldin Library",
-            "McKeldin Mall",
+            "Memorial Chapel",
             "Marathon Deli",
             "Dining Hall",
             "The Varsity",
-            "Memorial Chapel"
+            "The Stamp",
+            "McKeldin",
+            "Clarice",
+            "Eppley",
+            "Iribe"
         )
         val stampRoles = mutableListOf("Janitor", "Receptionist", "Role3", "Role4", "Role5", "Role6", "Role7")
-        val iribeRoles = mutableListOf("Larry Herman", "Clyde Kruskal", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val iribeRoles = mutableListOf("Larry Herman", "Clyde Kruskal", "Adviser", "Teaching Assistant", "Role5", "Role6", "Role7")
         val fieldRoles = mutableListOf("Football Player", "Crowd Member", "Role3", "Role4", "Role5", "Role6", "Role7")
         val eppleyRoles = mutableListOf("Weightlifter", "Runner", "Personal Trainer", "Role4", "Role5", "Role6", "Role7")
         val libraryRoles = mutableListOf("Student", "Librarian", "Role3", "Role4", "Role5", "Role6", "Role7")
-        val mallRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val clariceRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7")
         val deliRoles = mutableListOf("Janitor", "Manager", "Cook", "Cashier", "Dish Washer", "Role6", "Role7")
         val diningRoles = mutableListOf("Cook", "Server", "Janitor", "Dish Washer", "Role5", "Role6", "Role7")
         val varsityRoles = mutableListOf("Janitor", "Receptionist", "Security Guard", "Loud Tenant", "Maintenance Worker", "Role6", "Role7")
@@ -87,8 +87,8 @@ class Round : Activity(){
         roles["Iribe"] = iribeRoles
         roles["Capital One Field"] = fieldRoles
         roles["Eppley"] = eppleyRoles
-        roles["McKeldin Library"] = libraryRoles
-        roles["McKeldin Mall"] = mallRoles
+        roles["McKeldin"] = libraryRoles
+        roles["Clarice"] = clariceRoles
         roles["Marathon Deli"] = deliRoles
         roles["Dining Hall"] = diningRoles
         roles["The Varsity"] = varsityRoles
@@ -157,6 +157,8 @@ class Round : Activity(){
             sendMessage(playerName, msg)
             edtEditMessage.setText("")
         }
+
+        sendMessage("", playerName + " has joined the game!")
     }
 
     private fun sendMessage(sender : String, content : String) {
@@ -266,8 +268,6 @@ class Round : Activity(){
             }
             override fun onCancelled(error: DatabaseError) {}
         })
-
-        sendMessage("", playerName + " has joined the game!")
     }
 
     override fun onPause() {
@@ -287,12 +287,7 @@ class Round : Activity(){
             var textView = plate.findViewById<TextView>(R.id.plate_text)
             // funny business
             if (player.id == playerID) {
-                // hostID is sometimes null because onDataChange is asynchronous
-                //if (player.id == hostID) {
-                    //textView.text = "[Host] " + player.name + " (You!)"
-                //} else {
-                    textView.text = player.name + " (You!)"
-                //}
+                textView.text = player.name + " (You!)"
             } else {
                 textView.text = player.name
             }

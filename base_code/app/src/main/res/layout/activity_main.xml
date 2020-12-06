@@ -16,96 +16,107 @@
         android:background="@drawable/space"
         />
 
-    <Button
-        android:id="@+id/rules"
-        android:layout_width="99dp"
-        android:layout_height="38dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="73dp"
-        android:layout_marginBottom="154dp"
-        android:background="@color/blackish"
-        android:fontFamily="@font/limelight"
-        android:text="Rules"
-        android:textColor="@color/whiteish"
-        android:textSize="20dp" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="269dp"
-        android:layout_height="288dp"
-
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="77dp"
-        android:layout_marginTop="404dp"
-        android:layout_marginBottom="8dp"
-        app:srcCompat="@drawable/vines" />
-
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
         android:fontFamily="@font/limelight"
-        android:text="ImpostTerp"
+        android:textSize="48dp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="16dp"
+        android:autoSizeMaxTextSize="48dp"
+        android:autoSizeStepGranularity="2dp"
+        android:text="@string/app_name"
         android:textAlignment="center"
         android:textColor="@color/whiteish"
-        android:textSize="8mm" />
+        android:layout_above="@+id/actions"/>
 
-    <EditText
-        android:id="@+id/name"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
+    <RelativeLayout
+        android:id="@+id/actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="315dp"
-        android:background="@color/whiteish"
-        android:ems="10"
-        android:fontFamily="@font/limelight"
-        android:hint="Name"
-        android:textAlignment="center"
-        android:inputType="textPersonName" />
+        android:layout_marginRight="128dp">
 
-    <Button
-        android:id="@+id/start"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="246dp"
-        android:background="@color/blackish"
-        android:fontFamily="@font/limelight"
-        android:text="START!"
-        android:textColor="@color/whiteish"
-        android:textSize="24dp" />
+        <ImageView
+            android:id="@+id/start_char"
+            android:layout_width="128dp"
+            android:layout_height="64dp"
+            android:src="@drawable/start_person"
+            android:layout_alignRight="@id/name"/>
 
-    <Button
-        android:id="@+id/credits"
-        android:layout_width="113dp"
-        android:layout_height="38dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="65dp"
-        android:layout_marginBottom="88dp"
-        android:background="@color/blackish"
-        android:fontFamily="@font/limelight"
-        android:text="Credits"
-        android:textColor="@color/whiteish"
-        android:textSize="20dp" />
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/start_char"
+            android:background="@color/whiteish"
+            android:fontFamily="@font/limelight"
+            android:hint="Name"
+            android:textAlignment="center"
+            android:inputType="textPersonName"
+            android:padding="8dp"/>
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="350dp"
-        android:layout_height="517dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="33dp"
-        android:layout_marginEnd="43dp"
-        app:srcCompat="@drawable/top_main" />
+        <!--<ImageView
+            android:id="@+id/start_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/name"
+            android:layout_alignBottom="@id/start"
+            android:layout_toLeftOf="@id/name"
+            android:src="@drawable/arrow"
+            />-->
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:background="@color/blackish"
+            android:fontFamily="@font/limelight"
+            android:text="Start"
+            android:textColor="@color/whiteish"
+            android:textSize="24dp" />
+        <Button
+            android:id="@+id/rules"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/start"
+            android:background="@color/blackish"
+            android:fontFamily="@font/limelight"
+            android:text="Rules"
+            android:textColor="@color/whiteish"
+            android:textSize="24dp" />
+        <Button
+            android:id="@+id/credits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rules"
+            android:background="@color/blackish"
+            android:fontFamily="@font/limelight"
+            android:text="Credits"
+            android:textColor="@color/whiteish"
+            android:textSize="24dp" />
+
+        <!--
+        <ImageView
+            android:id="@+id/start_rules_vine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/name"
+            android:layout_toLeftOf="@id/start_credits_vine"
+            android:layout_below="@id/start"
+            android:src="@drawable/rules_vine"/>
+
+        <ImageView
+            android:id="@+id/start_credits_vine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/name"
+            android:layout_below="@id/name"
+            android:src="@drawable/credit_vine"
+            />-->
+
+    </RelativeLayout>
 
 </RelativeLayout>

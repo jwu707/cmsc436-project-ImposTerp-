@@ -7,6 +7,13 @@
     android:textAlignment="center"
     tools:context=".Rooms">
 
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/space"
+        />
+
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -39,79 +46,88 @@
             android:text="Leave" />
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/players_list_text"
-        android:text="Players"
+    <RelativeLayout
+        android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/header"
-        android:textColor="@color/blackish"
-        android:fontFamily="@font/limelight"
-        android:textAlignment="center"
-        android:textSize="16dp"
-        android:padding="16dp"
-        />
+        android:background="#66F0F0F0">
 
-    <GridLayout
-        android:id="@+id/players_grid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/players_list_text"
-        android:layout_centerHorizontal="true"
-        android:columnCount="5"
-        >
-    </GridLayout>
+        <TextView
+            android:id="@+id/players_list_text"
+            android:text="Players"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/blackish"
+            android:fontFamily="@font/limelight"
+            android:textAlignment="center"
+            android:textSize="16dp"
+            android:padding="16dp"
+            />
 
-    <TextView
-        android:id="@+id/dummy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/edit_message"
-        />
+        <GridLayout
+            android:id="@+id/players_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/players_list_text"
+            android:layout_centerHorizontal="true"
+            android:columnCount="5"
+            >
+        </GridLayout>
 
-    <ListView
-        android:id="@+id/chat_log"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/players_grid"
-        android:layout_alignBottom="@id/dummy"
-        android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="true"
-        android:divider="@null"
-        />
+        <TextView
+            android:id="@+id/dummy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/edit_message"
+            />
 
-    <EditText
-        android:id="@+id/edit_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/send_message"
-        android:hint="Send a message!"
-        android:layout_above="@id/begin"
-        android:fontFamily="@font/limelight"
-        />
-    <Button
-        android:id="@+id/send_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/edit_message"
-        android:layout_alignParentEnd="true"
-        android:background="@color/blackish"
-        android:textColor="@color/whiteish"
-        android:fontFamily="@font/limelight"
-        android:text="Send"
-        android:textSize="24dp"
-        />
+        <ListView
+            android:id="@+id/chat_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/players_grid"
+            android:layout_alignBottom="@id/dummy"
+            android:transcriptMode="alwaysScroll"
+            android:stackFromBottom="true"
+            android:divider="@null"
+            />
 
-    <Button
-        android:id="@+id/begin"
-        android:text="Start Game"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/blackish"
-        android:textColor="@color/whiteish"
-        android:fontFamily="@font/limelight"
-        android:textSize="24dp"
-        />
+        <EditText
+            android:id="@+id/edit_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/send_message"
+            android:hint="Send a message!"
+            android:layout_above="@id/begin"
+            android:fontFamily="@font/limelight"
+
+            />
+        <Button
+            android:id="@+id/send_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/edit_message"
+            android:layout_alignParentEnd="true"
+            android:background="@color/blackish"
+            android:textColor="@color/whiteish"
+            android:fontFamily="@font/limelight"
+            android:text="Send"
+            android:textSize="24dp"
+            />
+
+        <Button
+            android:id="@+id/begin"
+            android:text="Start Game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/blackish"
+            android:textColor="@color/whiteish"
+            android:fontFamily="@font/limelight"
+            android:textSize="24dp"
+            />
+
+    </RelativeLayout>
 
 </RelativeLayout>

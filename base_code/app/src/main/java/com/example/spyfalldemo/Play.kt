@@ -268,47 +268,28 @@ class Play : Activity(){
         }
     }
 
-    private fun spyWinsAlert() {
-        val dialogBuilder = AlertDialog.Builder(this)
-        val dialogView = layoutInflater.inflate(R.layout.generic_confirm_dialog, null)
-        dialogBuilder.setView(dialogView)
+    private fun spyWinsAlert(win : Boolean) {
 
-        val message = dialogView.findViewById<View>(R.id.message) as TextView
-        val btnYes = dialogView.findViewById<View>(R.id.yes) as Button
+        // disable so they cannot be pressed
+        val header = findViewById<RelativeLayout>(R.id.header)
+        header.visibility = View.GONE
 
-        message.text = "The spy wins!"
-        btnYes.text = "Back to Lobby"
+        val body = findViewById<RelativeLayout>(R.id.body)
+        body.visibility = View.GONE
 
-
-        val b = dialogBuilder.create()
-        btnYes.setOnClickListener{
-            backToLobby()
-            b.dismiss()
+        val overlay = findViewById<RelativeLayout>(R.id.overlay)
+        overlay.visibility = View.VISIBLE
+        val splashart = findViewById<ImageView>(R.id.splashart)
+        splashart.setImageResource(if (win) R.drawable.spy_win else R.drawable.terps_win)
+        val lobbyReturnCounter = object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // unimplemented
+            }
+            override fun onFinish() {
+                backToLobby()
+            }
         }
-        b.show()
-
-        if (isHost) {
-            countDown.cancel()
-        }
-    }
-
-    private fun civilianWinsAlert() {
-        val dialogBuilder = AlertDialog.Builder(this)
-        val dialogView = layoutInflater.inflate(R.layout.generic_confirm_dialog, null)
-        dialogBuilder.setView(dialogView)
-
-        val message = dialogView.findViewById<View>(R.id.message) as TextView
-        val btnYes = dialogView.findViewById<View>(R.id.yes) as Button
-
-        message.text = "The civilians win!"
-        btnYes.text = "Back to Lobby"
-
-        val b = dialogBuilder.create()
-        btnYes.setOnClickListener{
-            backToLobby()
-            b.dismiss()
-        }
-        b.show()
+        lobbyReturnCounter.start()
 
         if (isHost) {
             countDown.cancel()
@@ -393,10 +374,10 @@ class Play : Activity(){
                     // spy gets precendent in the event that there is input for a vote against
                     // the spy and a location guess at the exact same time (unlikely)
                     if (postSnapshot.key == "spyWins" && postSnapshot.value as Boolean) {
-                        spyWinsAlert()
+                        spyWinsAlert(true)
                     }
                     if (postSnapshot.key == "civilianWins" && postSnapshot.value as Boolean) {
-                        civilianWinsAlert()
+                        spyWinsAlert(false)
                     }
                     if (postSnapshot.key == "host") {
                         hostID = postSnapshot.value.toString()
@@ -438,28 +419,6 @@ class Play : Activity(){
                 } else {
                     txtLocation.text = "Location: " + location
                 }
-
-
-
-                /* client side back up
-                if (!counting) {
-                    // host only timer? send info to firebase - too slow?
-                    countDown = object : CountDownTimer(time, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
-                            time = millisUntilFinished
-                            val min = time / 60000
-                            val sec = (time % 60000) / 1000
-                            txtTime.text = String.format("%d:%02d", min, sec)
-                        }
-                        override fun onFinish() {
-                            spyWinsAlert()
-                        }
-                    }
-                    countDown.start()
-                    timing = true
-                }
-                */
-
                 // start timer
                 if (isHost && !timing) {
                     time = (time*60000)
