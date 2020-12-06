@@ -9,19 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
-
-
-        <TextView
-            android:id="@+id/player_count_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/room_name"
-            android:layout_alignLeft="@id/room_name"
-            android:fontFamily="@font/limelight"
-            android:text="Max Players - "
-            android:textSize="24dp"
-            android:textStyle="bold" />
-
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -29,7 +16,7 @@
             android:fontFamily="@font/limelight"
             android:textStyle="bold"
             android:textColor="@color/blackish"
-            android:text="Create Room"
+            android:text="Create New Lobby"
             android:textSize="24dp"
             />
         <EditText
@@ -38,68 +25,80 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/title"
             android:fontFamily="@font/limelight"
+            android:hint="Lobby Name"
+            />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/room_name"
+            android:fontFamily="@font/limelight"
+            android:hint="Password (None if blank)"
             />
 
-        <TextView
-            android:id="@+id/timer"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/slider_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/room_name"
-            android:layout_alignLeft="@id/room_name"
-            android:layout_marginLeft="-2dp"
-            android:layout_marginTop="34dp"
-            android:fontFamily="@font/limelight"
-            android:text="Time (mins) - "
-            android:textSize="24dp"
-            android:textStyle="bold" />
+            android:layout_below="@id/password">
+            <TextView
+                android:id="@+id/player_count_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/limelight"
+                android:text="Max Players - "
+                android:textSize="24dp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/player_count_text"
+                android:fontFamily="@font/limelight"
+                android:text="Time (mins) - "
+                android:textSize="24dp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/player_count_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/room_name"
-            android:layout_toRightOf="@id/player_count_text"
-            android:fontFamily="@font/limelight"
-            android:textStyle="bold"
-            android:textSize="24dp"
-            android:text="3"
-            />
+            <TextView
+                android:id="@+id/player_count_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/player_count_text"
+                android:fontFamily="@font/limelight"
+                android:textStyle="bold"
+                android:textSize="24dp"
+                android:text="3"
+                />
 
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/room_name"
-            android:layout_marginLeft="1dp"
-            android:layout_marginTop="34dp"
-            android:layout_toRightOf="@id/player_count_text"
-            android:fontFamily="@font/limelight"
-            android:text="1"
-            android:textSize="24dp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/timer"
+                android:layout_alignTop="@id/timer"
+                android:fontFamily="@font/limelight"
+                android:text="1"
+                android:textSize="24dp"
+                android:textStyle="bold" />
 
-        <SeekBar
-            android:id="@+id/player_count_seekbar"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/room_name"
-            android:layout_toRightOf="@id/player_count_num"
-            android:max="7"
-            />
+            <SeekBar
+                android:id="@+id/player_count_seekbar"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/player_count_num"
+                android:max="5"
+                />
 
-        <SeekBar
-            android:id="@+id/time_seekbar"
-            android:layout_width="208dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/player_count_seekbar"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginRight="0dp"
-            android:layout_toRightOf="@id/time"
-            android:max="9" />
-
+            <SeekBar
+                android:id="@+id/time_seekbar"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/player_count_seekbar"
+                android:layout_alignTop="@id/timer"
+                android:max="9"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content" />
+        </RelativeLayout>
 
     </RelativeLayout>
     <Button

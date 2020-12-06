@@ -20,6 +20,11 @@ import java.util.ArrayList
 
 class Rooms : Activity() {
 
+    companion object {
+        const val MIN_PLAYERS = 2
+        const val MIN_TIME = 1
+    }
+
     private lateinit var listView: ListView
     private lateinit var btnCreate: Button
     private lateinit var rooms: MutableList<Room>
@@ -27,8 +32,6 @@ class Rooms : Activity() {
     private lateinit var playerID : String
     private lateinit var playerName : String
     private lateinit var onChangeListenerRooms : ValueEventListener
-
-    private var timer = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,54 +53,54 @@ class Rooms : Activity() {
             val dialogView = inflater.inflate(R.layout.create_room_dialog, null)
             dialogBuilder.setView(dialogView)
 
-            val txtRoomName = dialogView.findViewById<View>(R.id.room_name) as EditText
-            val lblPlayerCount = dialogView.findViewById<View>(R.id.player_count_num) as TextView
-            val barPlayerCount = dialogView.findViewById<View>(R.id.player_count_seekbar) as SeekBar
-            val btnConfirm = dialogView.findViewById<View>(R.id.confirm) as Button
-            val time = dialogView.findViewById<View>(R.id.time) as TextView
-            val time_seekbar = dialogView.findViewById<View>(R.id.time_seekbar) as SeekBar
+            val txtRoomName = dialogView.findViewById(R.id.room_name) as EditText
+            val txtPassword = dialogView.findViewById(R.id.password) as TextView
+            val lblPlayerCount = dialogView.findViewById(R.id.player_count_num) as TextView
+            val barPlayerCount = dialogView.findViewById(R.id.player_count_seekbar) as SeekBar
+            val btnConfirm = dialogView.findViewById(R.id.confirm) as Button
+            val time = dialogView.findViewById(R.id.time) as TextView
+            val barTime = dialogView.findViewById(R.id.time_seekbar) as SeekBar
 
             txtRoomName.setText(playerName + "'s game")
 
             barPlayerCount.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                    lblPlayerCount.text = (progress + 3).toString()
+                    lblPlayerCount.text = (progress + MIN_PLAYERS).toString()
                 }
                 override fun onStartTrackingTouch(seek: SeekBar) {}
                 override fun onStopTrackingTouch(seek: SeekBar) {}
             })
 
-            time_seekbar.setOnSeekBarChangeListener(object :
+            barTime.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                    time.text = (progress + 1).toString()
-                    timer = progress + 1
+                    time.text = (progress + MIN_TIME).toString()
                 }
                 override fun onStartTrackingTouch(seek: SeekBar) {}
                 override fun onStopTrackingTouch(seek: SeekBar) {}
             })
 
-
-            btnConfirm.setOnClickListener{
-                val num = barPlayerCount.progress + 3
-                addRoom(txtRoomName.text.toString(), num)
-            }
-
             val b = dialogBuilder.create()
+            btnConfirm.setOnClickListener{
+                val players = barPlayerCount.progress + MIN_PLAYERS
+                val time = barTime.progress + MIN_TIME
+                addRoom(txtRoomName.text.toString(), txtPassword.text.toString(), players, time)
+                b.dismiss()
+            }
             b.show()
         })
 
         listView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val room = rooms[position]
-
             if (!room.inGame) {
                 if (room.players.size < room.maxPlayers) {
-                    // add player to room
-                    room.players[playerID] = Player(playerID, playerName)
-                    databaseRooms.child(room.id).child("players").setValue(room.players)
+                    if (room.password == "") {
+                        joinRoom(room)
+                    } else {
+                        confirmPassword(room)
+                    }
 
-                    joinRoom(room)
                 } else {
                     Toast.makeText(this, "This lobby is full!", Toast.LENGTH_SHORT).show()
                 }
@@ -107,7 +110,35 @@ class Rooms : Activity() {
         }
     }
 
+    private fun confirmPassword(room : Room) {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.request_password, null)
+        dialogBuilder.setView(dialogView)
+
+        val edtPassword = dialogView.findViewById(R.id.password) as EditText
+        val btnConfirm = dialogView.findViewById(R.id.confirm) as Button
+
+        val b = dialogBuilder.create()
+        btnConfirm.setOnClickListener{
+            val password = edtPassword.text.toString()
+            if (password == room.password) {
+                joinRoom(room)
+                b.dismiss()
+            } else {
+                Toast.makeText(
+                    this@Rooms,
+                    "Incorrect Password!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        b.show()
+    }
+
     private fun joinRoom(room : Room) {
+        room.players[playerID] = Player(playerID, playerName)
+        databaseRooms.child(room.id).child("players").setValue(room.players)
         // start intent to create room
         val intent = Intent(applicationContext, Round::class.java)
         intent.putExtra("ROOM_ID", room.id)
@@ -117,16 +148,11 @@ class Rooms : Activity() {
         finish()
     }
 
-    private fun addRoom(roomName : String, playerCount : Int) {
+    private fun addRoom(roomName : String, password : String, playerCount : Int, time : Int) {
         val id = databaseRooms.push().key
-        val room = Room(id!!, roomName, playerCount, playerID)
+        val room = Room(id!!, roomName, password, playerCount, time, playerID)
         room.players[playerID] = Player(playerID, playerName)
-        if (timer == 0){
-            timer = 1
-        }
-        room.time = timer
         databaseRooms.child(id).setValue(room)
-
         joinRoom(room)
     }
 
@@ -136,33 +162,38 @@ class Rooms : Activity() {
         onChangeListenerRooms = databaseRooms.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 rooms.clear()
-
                 var room: Room? = null
                 for (postSnapshot in dataSnapshot.children) {
                     room = postSnapshot.getValue(Room::class.java)
                     rooms.add(room!!)
                 }
-
                 var adapter = RoomListAdapter(this@Rooms, rooms)
                 listView.adapter = adapter
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 
+    @Override
     override fun onPause() {
         super.onPause()
         databaseRooms.removeEventListener(onChangeListenerRooms)
     }
-//    @Override
-//    override fun onBackPressed()
-//    {
-//        val backMain = Intent(applicationContext, MainActivity::class.java)
-//        FirebaseDatabase.getInstance().getReference("players").child(playerID).removeValue()
-//        startActivity(backMain)
-//        finish()
-//    }
+
+    /*
+    @Override
+    override fun onDestroy() {
+        super.onDestroy()
+        FirebaseDatabase.getInstance().getReference("players").child(playerID).removeValue()
+    }
+    */
+
+    @Override
+    override fun onBackPressed()
+    {
+        val backMain = Intent(applicationContext, MainActivity::class.java)
+        FirebaseDatabase.getInstance().getReference("players").child(playerID).removeValue()
+        startActivity(backMain)
+        finish()
+    }
 }

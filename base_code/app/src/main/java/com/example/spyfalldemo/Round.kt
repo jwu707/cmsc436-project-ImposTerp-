@@ -36,35 +36,34 @@ class Round : Activity(){
     private lateinit var onChangeListenerChatLog : ValueEventListener
     private lateinit var hostID : String
     private lateinit var roles : HashMap<String, MutableList<String>>
-    private var timer = ""
 
     companion object {
-        const val MIN_PLAYERS = 2
+        const val MIN_PLAYERS = Rooms.MIN_PLAYERS
 
         //!!!!!!!!!!!make sure the role sizes are consistent! right now there's FIVE roles!!!!!!!!!!!!!!!//
         val locations = arrayOf(
             "The Stamp",
-            "Iribe Center",
+            "Iribe",
             "Capital One Field",
-            "Eppley Rec. Center",
+            "Eppley",
             "McKeldin Library",
             "McKeldin Mall",
             "Marathon Deli",
-            "South Campus Dining Hall",
+            "Dining Hall",
             "The Varsity",
             "Memorial Chapel"
         )
-        val stampRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val iribeRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val fieldRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val eppleyRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val libraryRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val mallRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val deliRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val diningRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val varsityRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val chapelRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7", "Role8", "Role9")
-        val colors = mutableListOf("#bf0000","#d97b00","#0f0f0f","#00d9d9","#0045d9","#7000d9","#ce00d9","#6b6b6b","#00d92f","#d9d500")
+        val stampRoles = mutableListOf("Janitor", "Receptionist", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val iribeRoles = mutableListOf("Larry Herman", "Clyde Kruskal", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val fieldRoles = mutableListOf("Football Player", "Crowd Member", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val eppleyRoles = mutableListOf("Weightlifter", "Runner", "Personal Trainer", "Role4", "Role5", "Role6", "Role7")
+        val libraryRoles = mutableListOf("Student", "Librarian", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val mallRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7")
+        val deliRoles = mutableListOf("Janitor", "Manager", "Cook", "Cashier", "Dish Washer", "Role6", "Role7")
+        val diningRoles = mutableListOf("Cook", "Server", "Janitor", "Dish Washer", "Role5", "Role6", "Role7")
+        val varsityRoles = mutableListOf("Janitor", "Receptionist", "Security Guard", "Loud Tenant", "Maintenance Worker", "Role6", "Role7")
+        val chapelRoles = mutableListOf("Janitor", "Choir Member", "Preacher", "Bride", "Groom", "Bride", "Groom")
+        val colors = mutableListOf("#bf0000","#d97b00","#0f0f0f","#00d9d9","#0045d9","#7000d9","#ce00d9","#6b6b6b")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,13 +84,13 @@ class Round : Activity(){
 
         roles = HashMap<String, MutableList<String>>()
         roles["The Stamp"] = stampRoles
-        roles["Iribe Center"] = iribeRoles
+        roles["Iribe"] = iribeRoles
         roles["Capital One Field"] = fieldRoles
-        roles["Eppley Rec. Center"] = eppleyRoles
+        roles["Eppley"] = eppleyRoles
         roles["McKeldin Library"] = libraryRoles
         roles["McKeldin Mall"] = mallRoles
         roles["Marathon Deli"] = deliRoles
-        roles["South Campus Dining Hall"] = diningRoles
+        roles["Dining Hall"] = diningRoles
         roles["The Varsity"] = varsityRoles
         roles["Memorial Chapel"] = chapelRoles
 
@@ -173,7 +172,6 @@ class Round : Activity(){
         intent.putExtra("ROOM_ID", roomID)
         intent.putExtra("PLAYER_ID", playerID)
         intent.putExtra("PLAYER_NAME", playerName)
-        intent.putExtra("TIME", timer)
         startActivity(intent)
         finish()
     }
@@ -216,13 +214,15 @@ class Round : Activity(){
                     if (postSnapshot.key == "finished"){
                         if (postSnapshot.value as Boolean){
                             databaseRoom.removeValue()
-                            Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
+                            if (hostID != playerID) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Host has left the game",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                             leaveRoom()
                         }
-                    }
-
-                    if (postSnapshot.key == "time"){
-                        timer = postSnapshot.value.toString()
                     }
                 }
                 if (gameStat){
@@ -308,7 +308,7 @@ class Round : Activity(){
     {
         if (hostID == playerID){
             databaseRoom.child("finished").setValue(true)
-        }else {
+        } else {
             // remove the player from the list of players
             databaseRoomPlayers.child(playerID).removeValue()
             leaveRoom()

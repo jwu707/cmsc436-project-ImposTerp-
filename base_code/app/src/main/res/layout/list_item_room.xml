@@ -12,20 +12,6 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/time"
-            android:layout_width="238dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/players"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="19dp"
-            android:layout_marginRight="0dp"
-            android:layout_toRightOf="@id/name"
-            android:text="Sample Text"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/whiteish" />
-
-        <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,6 +19,16 @@
             android:text="Sample Text"
             android:textColor="@color/whiteish"
             android:textSize="24dp" />
+
+        <TextView
+            android:id="@+id/players"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/name"
+            android:text="Sample Text"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/whiteish" />
 
         <TextView
             android:id="@+id/status"
@@ -46,12 +42,24 @@
             android:textColor="@color/whiteish" />
 
         <TextView
-            android:id="@+id/players"
+            android:id="@+id/time"
+            android:layout_width="238dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/status"
+            android:layout_alignParentRight="true"
+            android:layout_alignRight="@id/name"
+            android:text="Sample Text"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/whiteish" />
+
+        <TextView
+            android:id="@+id/password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/time"
             android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/name"
-            android:text="Sample Text"
+            android:layout_alignRight="@id/name"
+            android:text="Password Required"
             android:textAlignment="viewEnd"
             android:textColor="@color/whiteish" />
 

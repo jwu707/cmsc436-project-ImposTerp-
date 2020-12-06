@@ -30,21 +30,19 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
     private lateinit var btnStart : Button
     private lateinit var edtName : EditText
+    private lateinit var btnRules : Button
+    private lateinit var btnCredits : Button
     private lateinit var databasePlayers : DatabaseReference
-    private var playerID : String = ""
-    private var playerName : String = ""
     private lateinit var onChangeListenerPlayers : ValueEventListener
-
-
     private lateinit var mFrame: FrameLayout
 
+    private var playerID : String = ""
+    private var playerName : String = ""
 
     // Display dimensions
     private var mDisplayWidth: Int = 0
     private var mDisplayHeight: Int = 0
 
-    private lateinit var btnRules : Button
-    private lateinit var btnCredits : Button
     private var noReset = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         btnRules.setOnClickListener{btnRulesPress()}
         btnCredits.setOnClickListener{btnCreditPress()}
 
-        mFrame = (findViewById(R.id.frame) as FrameLayout)
+        mFrame = findViewById<FrameLayout>(R.id.frame)
     }
 
     private fun btnCreditPress() {
@@ -123,40 +121,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus&&noReset) {
-
-            // Get the size of the display so this View knows where borders are
-            mDisplayWidth = mFrame!!.width
-            mDisplayHeight = mFrame!!.height
-
-            val charaArray = arrayOf( BitmapFactory.decodeResource(resources, R.drawable.bee),
-                                      BitmapFactory.decodeResource(resources, R.drawable.top_hat),
-                                      BitmapFactory.decodeResource(resources, R.drawable.tu_tu),
-                                      BitmapFactory.decodeResource(resources, R.drawable.pirate),
-                                      BitmapFactory.decodeResource(resources, R.drawable.spy),
-                                      BitmapFactory.decodeResource(resources, R.drawable.nerd),
-                                      BitmapFactory.decodeResource(resources, R.drawable.chef),
-                                      BitmapFactory.decodeResource(resources, R.drawable.gamer),
-                                      BitmapFactory.decodeResource(resources, R.drawable.football),
-                                      BitmapFactory.decodeResource(resources, R.drawable.music))
-
-            for (i in 0 until charaArray.size){
-                val addChara = CharaView(
-                    mFrame!!.context,
-                    Random().nextInt(mDisplayWidth).toFloat(),
-                    Random().nextInt(mDisplayHeight).toFloat(),
-                    charaArray[i]
-                )
-                mFrame!!.addView(addChara)
-                addChara.start(charaArray[i])
-            }
-
-        }
-    }
-
     override fun onStart() {
         super.onStart()
         onChangeListenerPlayers = databasePlayers.addValueEventListener(object : ValueEventListener {
@@ -181,8 +145,40 @@ class MainActivity : AppCompatActivity() {
         databasePlayers.removeEventListener(onChangeListenerPlayers)
     }
 
-    inner class CharaView internal constructor(context: Context, x: Float, y: Float, bitmap: Bitmap) :
-        View(context) {
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && noReset) {
+
+            // Get the size of the display so this View knows where borders are
+            mDisplayWidth = mFrame!!.width
+            mDisplayHeight = mFrame!!.height
+
+            val charaArray = arrayOf( BitmapFactory.decodeResource(resources, R.drawable.bee),
+                                      BitmapFactory.decodeResource(resources, R.drawable.top_hat),
+                                      BitmapFactory.decodeResource(resources, R.drawable.tu_tu),
+                                      BitmapFactory.decodeResource(resources, R.drawable.pirate),
+                                      BitmapFactory.decodeResource(resources, R.drawable.spy),
+                                      BitmapFactory.decodeResource(resources, R.drawable.nerd),
+                                      BitmapFactory.decodeResource(resources, R.drawable.chef),
+                                      BitmapFactory.decodeResource(resources, R.drawable.gamer),
+                                      BitmapFactory.decodeResource(resources, R.drawable.football),
+                                      BitmapFactory.decodeResource(resources, R.drawable.music))
+
+            for (i in charaArray.indices){
+                val addChara = CharaView(
+                    mFrame!!.context,
+                    Random().nextInt(mDisplayWidth).toFloat(),
+                    Random().nextInt(mDisplayHeight).toFloat(),
+                    charaArray[i]
+                )
+                mFrame!!.addView(addChara)
+                addChara.start(charaArray[i])
+            }
+
+        }
+    }
+
+    inner class CharaView internal constructor(context: Context, x: Float, y: Float, bitmap: Bitmap) : View(context) {
         private val mPainter = Paint()
         private var mMoverFuture: ScheduledFuture<*>? = null
         private var mScaledBitmapWidth: Int = 0
@@ -280,15 +276,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
-        @Synchronized
-        fun deflect(velocityX: Float, velocityY: Float) {
-            mDx = velocityX / REFRESH_RATE
-            mDy = velocityY / REFRESH_RATE
-        }
-
-
         @Synchronized
         override fun onDraw(canvas: Canvas) {
             canvas.save()
@@ -317,17 +304,6 @@ class MainActivity : AppCompatActivity() {
             return !isOutOfView
 
         }
-    }
-
-
-
-
-
-
-
-
-    companion object {
-        const val TAG = "SPY_FALL_DEMO"
     }
 }
 
