@@ -140,9 +140,6 @@ class Play : Activity(){
 
         voteID = ""
         spyID = ""
-
-        //val randIcon = icons.indices.random()
-        //icon.setImageResource(icons[randIcon])
     }
 
     private fun sendMessage(sender : String, content : String) {

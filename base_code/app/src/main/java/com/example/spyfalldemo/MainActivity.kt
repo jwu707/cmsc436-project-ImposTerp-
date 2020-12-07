@@ -72,11 +72,9 @@ class MainActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.generic_confirm_dialog, null)
         dialogBuilder.setView(dialogView)
 
-        val txtHeader = dialogView.findViewById(R.id.header) as TextView
         val txtMessage = dialogView.findViewById(R.id.message) as TextView
         val btnBack = dialogView.findViewById(R.id.yes) as Button
 
-        txtHeader.text = "Credits"
         txtMessage.setText(R.string.credits)
         btnBack.text = "Close"
 
@@ -95,11 +93,9 @@ class MainActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.generic_confirm_dialog, null)
         dialogBuilder.setView(dialogView)
 
-        val txtHeader = dialogView.findViewById(R.id.header) as TextView
         val txtMessage = dialogView.findViewById(R.id.message) as TextView
         val btnBack = dialogView.findViewById(R.id.yes) as Button
 
-        txtHeader.text = "Rules"
         txtMessage.setText(R.string.rules)
         txtMessage.textSize = 16F
         txtMessage.textAlignment = View.TEXT_ALIGNMENT_TEXT_START

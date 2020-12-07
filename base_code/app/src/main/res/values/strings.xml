@@ -1,12 +1,22 @@
 <resources>
     <string name="app_name">ImpostTerp</string>
     <string name="rules">
-        At the start of the game, a random location is chosen and each player (Terp) is given a unique role based on the location. However, 1 player will become the ImpostTerp.
-        \n\nTerps must question each other to find out who the ImpostTerp is, but be careful to not be too specific, otherwise the ImpostTerp will know where they are and win! The ImpostTerp
+        How to play
+        \n
+        \nAt the start of the game, a random location is chosen and each player (Terp) is given a unique role based on the location. However, 1 player will become the ImpostTerp.
+        \n
+        \nTerps must question each other to find out who the ImpostTerp is, but be careful to not be too specific, otherwise the ImpostTerp will know where they are and win! The ImpostTerp
         can ask questions as well. When asked a question, the player must give a response (otherwise that is pretty sus...).
-        \n\nIf no consensus is made once time is up, the ImpostTerp wins!
+        \n
+        \nIf no consensus is made once time is up, the ImpostTerp wins!
     </string>
     <string name="credits">
-        Group 4\nJessie Wu\nJason Yuen\nJohn Luo\n\nArt by Jessie!
+        Made by
+        \n
+        \nJessie Wu
+        \nJason Yuen
+        \nJohn Luo
+        \n
+        \nArt by Jessie!
     </string>
 </resources>

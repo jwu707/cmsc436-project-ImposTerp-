@@ -118,7 +118,7 @@
                 />
             <GridLayout
                 android:id="@+id/players_grid"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/player_grid_text"
                 android:layout_centerHorizontal="true"
@@ -139,7 +139,7 @@
                 />
             <GridLayout
                 android:id="@+id/locations_grid"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/locations_grid_text"
                 android:layout_centerHorizontal="true"
