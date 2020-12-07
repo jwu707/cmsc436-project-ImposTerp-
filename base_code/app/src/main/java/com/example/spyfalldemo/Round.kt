@@ -180,7 +180,7 @@ class Round : Activity(){
         btnChatClose.setOnClickListener{
             chatLayout.setBackgroundColor(Color.parseColor("#00000000"))
             var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
-            params.addRule(RelativeLayout.BELOW, R.id.actions)
+            params.addRule(RelativeLayout.BELOW, R.id.players_grid)
             chatLayout.layoutParams = params
             var mgr = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             mgr.hideSoftInputFromWindow(chatLayout.windowToken, 0)

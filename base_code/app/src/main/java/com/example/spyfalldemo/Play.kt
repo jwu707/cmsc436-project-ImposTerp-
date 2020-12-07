@@ -72,7 +72,6 @@ class Play : Activity(){
     private lateinit var hostID : String
     private lateinit var spyID : String
     private lateinit var voteID : String
-    private var spyName = ""
 
     //voting variables
     private lateinit var votes : HashMap<String, Int>
@@ -330,7 +329,7 @@ class Play : Activity(){
                     // civilians LOSE
                     databaseRoom.child("spyWins").setValue(true)
                 }
-                sendMessage("", player.name + " was the spy!")
+                sendMessage("", playersMap[spyID]!!.name + " was the spy!")
 
                 databaseRoom.child("inGame").setValue(false)
             }
@@ -487,7 +486,6 @@ class Play : Activity(){
                     if (postSnapshot.key == "spy") {
                         if (postSnapshot.value == playerID) {
                             isSpy = true
-                            spyName = playerName
                         }
                         spyID = postSnapshot.value.toString()
                     }
@@ -536,9 +534,10 @@ class Play : Activity(){
 
                             //when time is up the spy wins
                             override fun onFinish() {
+                                val spy = playersMap[spyID]
                                 databaseRoom.child("spyWins").setValue(true)
                                 sendMessage("", "Time's UP")
-                                sendMessage("", spyName + " was the spy!")
+                                sendMessage("", spy!!.name + " was the spy!")
                                 countDown.cancel()
                             }
                         }
