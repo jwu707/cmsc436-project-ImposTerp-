@@ -122,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/player_grid_text"
                 android:layout_centerHorizontal="true"
-                android:columnCount="5"
+                android:columnCount="3"
                 >
             </GridLayout>
 
@@ -143,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/locations_grid_text"
                 android:layout_centerHorizontal="true"
-                android:columnCount="3"
+                android:columnCount="2"
                 >
             </GridLayout>
         </RelativeLayout>
@@ -153,6 +153,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/actions">
+
+            <Button
+                android:id="@+id/close_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/blackish"
+                android:layout_alignParentTop="true"
+                android:visibility="gone"
+                android:textSize="24dp"
+                android:textColor="@color/whiteish"
+                android:fontFamily="@font/limelight"
+                android:text="Close Chat"
+                />
+
             <ListView
                 android:id="@+id/chat_log"
                 android:layout_width="match_parent"
@@ -176,22 +190,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="0dp"
-                android:layout_toLeftOf="@id/send_message"
                 android:fontFamily="@font/limelight"
-                android:hint="Send a message!" />
-            <Button
-                android:id="@+id/send_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/edit_message"
-                android:layout_alignParentEnd="true"
-                android:background="@color/blackish"
-                android:textColor="@color/whiteish"
-                android:fontFamily="@font/limelight"
-                android:text="Send"
-                android:textSize="24dp"
-                />
+                android:hint="Send a message!"
+                android:inputType="text"
+                android:imeOptions="actionSend"
+                android:layout_margin="8dp"/>
 
         </RelativeLayout>
     </RelativeLayout>

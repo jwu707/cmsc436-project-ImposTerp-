@@ -15,6 +15,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.CountDownTimer
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
@@ -35,11 +37,12 @@ class Play : Activity(){
     private lateinit var onChangeListenerRoom : ValueEventListener
     private lateinit var onChangeListenerRoomChatLog : ValueEventListener
     private lateinit var onChangeListenerRoomPlayers : ValueEventListener
+    private lateinit var chatLayout : RelativeLayout
     private lateinit var lstChatLog : ListView
     private lateinit var txtRoomName : TextView
     private lateinit var btnLeave : Button
     private lateinit var edtEditMessage : EditText
-    private lateinit var btnSendMessage : Button
+    private lateinit var btnChatClose : Button
     private lateinit var txtRole : TextView
     private lateinit var txtLocation : TextView
     private lateinit var txtTime : TextView
@@ -74,12 +77,12 @@ class Play : Activity(){
         txtRoomName = findViewById(R.id.room_name)
         btnLeave = findViewById(R.id.leave)
         edtEditMessage = findViewById(R.id.edit_message)
-        btnSendMessage = findViewById(R.id.send_message)
+        btnChatClose = findViewById(R.id.close_chat)
         txtTime = findViewById(R.id.timer_val)
+        chatLayout = findViewById(R.id.chat_layout)
 
         txtRole = findViewById(R.id.role)
         txtLocation = findViewById(R.id.location)
-        //icon = findViewById(R.id.role_icon)
 
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
@@ -100,10 +103,39 @@ class Play : Activity(){
             leaveRoom()
         }
 
-        btnSendMessage.setOnClickListener{
-            val msg = edtEditMessage.text.toString()
-            sendMessage(playerName, msg)
-            edtEditMessage.setText("")
+        btnChatClose.setOnClickListener{
+            chatLayout.setBackgroundColor(Color.parseColor("#00000000"))
+            var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
+            params.addRule(RelativeLayout.BELOW, R.id.actions)
+            chatLayout.layoutParams = params
+            var mgr = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            mgr.hideSoftInputFromWindow(chatLayout.windowToken, 0)
+            edtEditMessage.clearFocus()
+
+            btnChatClose.visibility = View.GONE
+        }
+
+        // from https://developer.android.com/training/keyboard-input/style#Action
+        edtEditMessage.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    val msg = edtEditMessage.text.toString()
+                    sendMessage(playerName, msg)
+                    edtEditMessage.setText("")
+                    true
+                }
+                else -> false
+            }
+        }
+
+        edtEditMessage.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                chatLayout.setBackgroundColor(Color.parseColor("#AAF0F0F0"))
+                var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
+                params.addRule(RelativeLayout.BELOW, R.id.header)
+                chatLayout.layoutParams = params
+                btnChatClose.visibility = View.VISIBLE
+            }
         }
 
         voteID = ""

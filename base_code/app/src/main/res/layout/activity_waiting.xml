@@ -72,50 +72,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/players_list_text"
             android:layout_centerHorizontal="true"
-            android:columnCount="5"
+            android:columnCount="3"
             >
         </GridLayout>
-
-        <TextView
-            android:id="@+id/dummy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/edit_message"
-            />
-
-        <ListView
-            android:id="@+id/chat_log"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/players_grid"
-            android:layout_alignBottom="@id/dummy"
-            android:transcriptMode="alwaysScroll"
-            android:stackFromBottom="true"
-            android:divider="@null"
-            />
-
-        <EditText
-            android:id="@+id/edit_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/send_message"
-            android:hint="Send a message!"
-            android:layout_above="@id/begin"
-            android:fontFamily="@font/limelight"
-
-            />
-        <Button
-            android:id="@+id/send_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/edit_message"
-            android:layout_alignParentEnd="true"
-            android:background="@color/blackish"
-            android:textColor="@color/whiteish"
-            android:fontFamily="@font/limelight"
-            android:text="Send"
-            android:textSize="24dp"
-            />
 
         <Button
             android:id="@+id/begin"
@@ -128,6 +87,57 @@
             android:fontFamily="@font/limelight"
             android:textSize="24dp"
             />
+
+        <RelativeLayout
+            android:id="@+id/chat_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/begin"
+            android:layout_below="@id/players_grid"
+            >
+        <TextView
+            android:id="@+id/dummy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/edit_message"
+            />
+
+            <Button
+                android:id="@+id/close_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/blackish"
+                android:layout_alignParentTop="true"
+                android:visibility="gone"
+                android:textSize="24dp"
+                android:textColor="@color/whiteish"
+                android:fontFamily="@font/limelight"
+                android:text="Close Chat"
+                />
+
+            <ListView
+                android:id="@+id/chat_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/close_chat"
+                android:layout_alignBottom="@id/dummy"
+                android:transcriptMode="alwaysScroll"
+                android:stackFromBottom="true"
+                android:divider="@null"
+                />
+
+            <EditText
+                android:id="@+id/edit_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Send a message!"
+                android:layout_alignParentBottom="true"
+                android:fontFamily="@font/limelight"
+                android:inputType="text"
+                android:imeOptions="actionSend"
+                android:layout_margin="8dp"
+                />
+        </RelativeLayout>
 
     </RelativeLayout>
 

@@ -11,7 +11,10 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import java.lang.Exception
 import java.util.ArrayList
@@ -19,7 +22,8 @@ import java.util.ArrayList
 class Round : Activity(){
     private lateinit var grdPlayers: GridLayout
     private lateinit var lstChatLog: ListView
-    private lateinit var btnSendMessage : Button
+    private lateinit var btnChatClose : Button
+    private lateinit var chatLayout : RelativeLayout
     private lateinit var edtEditMessage : EditText
     private lateinit var txtRoomName : TextView
     private lateinit var btnStart: Button
@@ -73,10 +77,11 @@ class Round : Activity(){
         grdPlayers = findViewById(R.id.players_grid)
         lstChatLog = findViewById(R.id.chat_log)
         edtEditMessage = findViewById(R.id.edit_message)
-        btnSendMessage = findViewById(R.id.send_message)
+        btnChatClose = findViewById(R.id.close_chat)
         btnStart = findViewById(R.id.begin)
         btnLeave = findViewById(R.id.leave)
         txtRoomName = findViewById(R.id.room_name)
+        chatLayout = findViewById(R.id.chat_layout)
 
         roomID = intent.getStringExtra("ROOM_ID").toString()
         playerID = intent.getStringExtra("PLAYER_ID").toString()
@@ -152,10 +157,41 @@ class Round : Activity(){
             }
         }
 
-        btnSendMessage.setOnClickListener{
-            val msg = edtEditMessage.text.toString()
-            sendMessage(playerName, msg)
-            edtEditMessage.setText("")
+        btnChatClose.setOnClickListener{
+            chatLayout.setBackgroundColor(Color.parseColor("#00000000"))
+            var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
+            params.addRule(RelativeLayout.BELOW, R.id.actions)
+            chatLayout.layoutParams = params
+            var mgr = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            mgr.hideSoftInputFromWindow(chatLayout.windowToken, 0)
+            edtEditMessage.clearFocus()
+
+            btnChatClose.visibility = View.GONE
+        }
+
+        // for bringing up the chat log
+        edtEditMessage.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                chatLayout.setBackgroundColor(Color.parseColor("#AAF0F0F0"))
+                var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
+                params.addRule(RelativeLayout.BELOW, R.id.header)
+                chatLayout.layoutParams = params
+                btnChatClose.visibility = View.VISIBLE
+            }
+        }
+
+        // for manipulating the keyboard to change the 'shift' button to 'send'
+        // from https://developer.android.com/training/keyboard-input/style#Action
+        edtEditMessage.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    val msg = edtEditMessage.text.toString()
+                    sendMessage(playerName, msg)
+                    edtEditMessage.setText("")
+                    true
+                }
+                else -> false
+            }
         }
 
         sendMessage("", playerName + " has joined the game!")
