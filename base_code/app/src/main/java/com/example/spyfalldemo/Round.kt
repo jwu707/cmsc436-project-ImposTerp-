@@ -277,6 +277,7 @@ class Round : Activity(){
         databaseRoomChatLog.removeEventListener(onChangeListenerChatLog)
     }
 
+
     private fun populatePlayersGrid() {
         // reset layout
         grdPlayers.removeAllViews()

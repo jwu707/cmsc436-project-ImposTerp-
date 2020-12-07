@@ -122,7 +122,7 @@ class Play : Activity(){
     }
 
     private fun leaveRoom() {
-        if (hostID == playerID){
+        if (hostID == playerID) {
             databaseRoom.child("finished").setValue(true)
         }else {
             // remove the player from the list of players
@@ -246,7 +246,7 @@ class Play : Activity(){
     private fun lookAtVotes() {
 
         // re-calculate voting threshold to account for players leaving
-        votingThreshold = 0//floor((players.size/2).toDouble()).toInt()
+        votingThreshold = floor((players.size/2).toDouble()).toInt()
 
         for (i in votes) {
             // check the number of votes towards every player in the game
@@ -291,9 +291,10 @@ class Play : Activity(){
         }
         lobbyReturnCounter.start()
 
-        if (isHost) {
+        if (isHost){
             countDown.cancel()
         }
+
     }
 
     private fun backToLobby() {
@@ -369,15 +370,17 @@ class Play : Activity(){
 
         onChangeListenerRoom = databaseRoom.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-
+                var stopTime = false
+                var spyWins = false
+                var civilWins = false
                 for (postSnapshot in dataSnapshot.children) {
                     // spy gets precendent in the event that there is input for a vote against
                     // the spy and a location guess at the exact same time (unlikely)
                     if (postSnapshot.key == "spyWins" && postSnapshot.value as Boolean) {
-                        spyWinsAlert(true)
+                        spyWins = true
                     }
                     if (postSnapshot.key == "civilianWins" && postSnapshot.value as Boolean) {
-                        spyWinsAlert(false)
+                        civilWins = true
                     }
                     if (postSnapshot.key == "host") {
                         hostID = postSnapshot.value.toString()
@@ -401,6 +404,8 @@ class Play : Activity(){
                         if (postSnapshot.value == true){
                             leaveRoom()
                             Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
+                            stopTime = true
+                            databaseRoom.removeValue()
                         }
                     }
                     if (postSnapshot.key == "time") {
@@ -413,28 +418,43 @@ class Play : Activity(){
                         txtTime.text = String.format("%d:%02d", min, sec)
                     }
                 }
-
-                if (isSpy) {
-                    txtLocation.text = "Guess the Location to WIN!"
-                } else {
-                    txtLocation.text = "Location: " + location
-                }
-                // start timer
-                if (isHost && !timing) {
-                    time = (time*60000)
-                    countDown = object : CountDownTimer(time, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
-                            databaseRoom.child("timeRemaining").setValue(millisUntilFinished)
-                        }
-                        override fun onFinish() {
-                            databaseRoom.child("spyWins").setValue(true)
-                        }
+                if (stopTime == true){
+                    if (countDown != null){
+                        countDown.cancel()
                     }
-                    countDown.start()
-                    timing = true
-                }
+                } else {
+                    if (isSpy) {
+                        txtLocation.text = "Guess the Location to WIN!"
+                    } else {
+                        txtLocation.text = "Location: " + location
+                    }
+                    // start timer
+                    if (isHost && !timing && spyWins == false) {
+                        time = (time * 60000)
+                        countDown = object : CountDownTimer(time, 1000) {
+                            override fun onTick(millisUntilFinished: Long) {
+                                databaseRoom.child("timeRemaining").setValue(millisUntilFinished)
+                            }
 
-                populateLocationsGrid()
+                            override fun onFinish() {
+                                databaseRoom.child("spyWins").setValue(true)
+                                countDown.cancel()
+                            }
+                        }
+                        countDown.start()
+                        timing = true
+                    }
+                    if (spyWins){
+                        spyWinsAlert(true)
+                        databaseRoom.removeEventListener(onChangeListenerRoom)
+                    }
+                    if (civilWins){
+                        spyWinsAlert(false)
+                        databaseRoom.removeEventListener(onChangeListenerRoom)
+                    }
+
+                    populateLocationsGrid()
+                }
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })
@@ -446,6 +466,7 @@ class Play : Activity(){
         databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
         databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
     }
+
 
     @Override
     override fun onBackPressed()

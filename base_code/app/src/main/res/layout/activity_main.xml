@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:textAlignment="center"
     tools:context=".MainActivity"
+    android:screenOrientation="portrait"
 
     >
 
