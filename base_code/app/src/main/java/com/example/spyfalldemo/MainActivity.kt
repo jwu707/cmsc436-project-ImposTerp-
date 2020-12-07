@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var onChangeListenerPlayers : ValueEventListener
     private lateinit var mFrame: FrameLayout
 
+    private lateinit var names : MutableList<String>
 
     private var playerID : String = ""
     private var playerName : String = ""
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         edtName = findViewById(R.id.name)
         btnCredits = findViewById(R.id.credits)
         btnRules = findViewById(R.id.rules)
+        names = ArrayList()
 
         //player firebase refernce
         databasePlayers = FirebaseDatabase.getInstance().getReference("players")
@@ -129,21 +131,33 @@ class MainActivity : AppCompatActivity() {
     private fun btnStartPress() {
         // set player name and clear EditText view
         var username = edtName.text.toString()
-        edtName.text.clear()
 
         if (username != "") {
-            btnStart.isEnabled = false
+            if(username.length <= 16) {
+                if (!names.contains(username)) {
+                    //Make a player id from fierbase
+                    val id = databasePlayers.push().key
+                    //create a player
+                    val player = Player(id!!, username)
+                    //set the player info
+                    databasePlayers.child(id).setValue(player)
 
-            //Make a player id from fierbase
-            val id = databasePlayers.push().key
-            //create a player
-            val player = Player(id!!, username)
-            //set the player info
-            databasePlayers.child(id).setValue(player)
-
-            playerID = id.toString()
-            playerName = username
-
+                    playerID = id.toString()
+                    playerName = username
+                } else {
+                    Toast.makeText(
+                        this,
+                        "That name is unavailable!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                Toast.makeText(
+                    this,
+                    "That name is too long!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         } else { // name cannot be blank
             Toast.makeText(
                 this,
@@ -159,6 +173,16 @@ class MainActivity : AppCompatActivity() {
         //firbase player refernce checks for changes to its data
         onChangeListenerPlayers = databasePlayers.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                names.clear()
+                for (player in dataSnapshot.children) {
+                    for (property in player.children) {
+                        if (property.key == "name") {
+                            names.add(property.value.toString())
+                        }
+                    }
+                }
+
                 //after a name is inputed the user can move onto the next activity
                 if (playerID != "") {
                     val intent = Intent(applicationContext, Rooms::class.java)

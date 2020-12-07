@@ -205,12 +205,13 @@ class Play : Activity(){
             val player = players[i]
             val plate = layoutInflater.inflate(R.layout.plate, null)
             var textView = plate.findViewById<TextView>(R.id.plate_text)
-            textView.text = player.name
-            val color = player.color
-            textView.setBackgroundColor(Color.parseColor(color))
+
             plate.id = i
             if (player.id != playerID) {
                 plate.setOnClickListener { txtPlayerOnClick(i) }
+                textView.text = player.name
+            } else {
+                textView.text = player.name + " (You!)"
             }
             grdPlayers.addView(plate)
         }

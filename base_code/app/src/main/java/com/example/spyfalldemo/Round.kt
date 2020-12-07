@@ -84,7 +84,6 @@ class Round : Activity(){
         val diningRoles = mutableListOf("Cook", "Server", "Janitor", "Dish Washer", "Hungry Student", "Receptionist", "Hungry Student")
         val varsityRoles = mutableListOf("Janitor", "Receptionist", "Security Guard", "Loud Tenant", "Maintenance Worker", "Role6", "Role7")
         val chapelRoles = mutableListOf("Janitor", "Choir Member", "Preacher", "Bride", "Groom", "Bride", "Groom")
-        val colors = mutableListOf("#bf0000","#d97b00","#0f0f0f","#00d9d9","#0045d9","#7000d9","#ce00d9","#6b6b6b")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,7 +156,6 @@ class Round : Activity(){
                 databaseRoom.child("spy").setValue(spyID)
 
                 roles[location]!!.shuffle()
-                colors.shuffle()
                 // reset player vote and roles
                 var offset = 0
                 val playersMap = HashMap<String, Player>()
@@ -165,9 +163,9 @@ class Round : Activity(){
                     val player = players[i]
                     if (player.id != spyID) {
                         val role = roles[location]?.get(i - offset).toString()
-                        playersMap[player.id] = Player(player.id, player.name, role, "", colors[i])
+                        playersMap[player.id] = Player(player.id, player.name, role, "")
                     } else {
-                        playersMap[player.id] = Player(player.id, player.name, "Spy", "", colors[i])
+                        playersMap[player.id] = Player(player.id, player.name, "Spy", "")
                         offset = 1
                     }
                 }
