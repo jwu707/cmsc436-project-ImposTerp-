@@ -66,6 +66,10 @@ class Play : Activity(){
     private var isSpy : Boolean = false
     private var timing : Boolean = false
     private var time : Long = 0
+    private var spyName = ""
+    private var inGame = true
+    private val MIN_PLAYER = 2
+    private var playerCount = 100
 
     private val icons = arrayOf(R.drawable.bee, R.drawable.top_hat, R.drawable.tu_tu, R.drawable.nerd, R.drawable.pirate)
 
@@ -153,7 +157,12 @@ class Play : Activity(){
     private fun leaveRoom() {
         if (hostID == playerID) {
             databaseRoom.child("finished").setValue(true)
-        }else {
+        } else if (spyID == playerID){
+            databaseRoomPlayers.child(playerID).removeValue()
+            sendMessage("", playerName + " has left the game!")
+            sendMessage("", playerName + " was the spy!")
+            databaseRoom.child("civilianWins").setValue(true)
+        } else {
             // remove the player from the list of players
             databaseRoomPlayers.child(playerID).removeValue()
             sendMessage("", playerName + " has left the game!")
@@ -298,6 +307,14 @@ class Play : Activity(){
     }
 
     private fun spyWinsAlert(win : Boolean) {
+        if (win == false && playerCount < MIN_PLAYER){
+            sendMessage("", "No enough players!")
+            sendMessage("", playerName + " was the spy!")
+        }
+
+        databaseRoom.removeEventListener(onChangeListenerRoom)
+        databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
+        databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
 
         // disable so they cannot be pressed
         val header = findViewById<RelativeLayout>(R.id.header)
@@ -319,7 +336,8 @@ class Play : Activity(){
             }
         }
         lobbyReturnCounter.start()
-
+        databaseRoom.child("inGame").setValue(false)
+        inGame = false
         if (isHost){
             countDown.cancel()
         }
@@ -347,35 +365,40 @@ class Play : Activity(){
                 votes.clear()
 
                 var player: Player? = null
-                for (postSnapshot in dataSnapshot.children) {
-                    player = postSnapshot.getValue(Player::class.java)
-                    players.add(player!!)
-                    playersMap[player.id] = player
-                    votes[player.id] = 0
+                if (dataSnapshot.childrenCount < MIN_PLAYER){
+                    playerCount = dataSnapshot.childrenCount.toInt()
+                    databaseRoom.child("civilianWins").setValue(true)
+                } else {
+                    for (postSnapshot in dataSnapshot.children) {
+                        player = postSnapshot.getValue(Player::class.java)
+                        players.add(player!!)
+                        playersMap[player.id] = player
+                        votes[player.id] = 0
 
-                    if (player.id == playerID) {
-                        if (player.role == "Spy"){
-                            txtRole.text = "You are the SPY."
-                            //icon.setImageResource(R.drawable.spy)
-                        } else {
-                            txtRole.text = "Role: " + player.role
+                        if (player.id == playerID) {
+                            if (player.role == "Spy") {
+                                txtRole.text = "You are the SPY."
+                                //icon.setImageResource(R.drawable.spy)
+                            } else {
+                                txtRole.text = "Role: " + player.role
+                            }
                         }
                     }
-                }
 
-                // iterate again to count votes
-                for (postSnapshot in dataSnapshot.children) {
-                    player = postSnapshot.getValue(Player::class.java)
-                    if (player!!.vote != "") {
-                        val count = votes[player!!.vote]!! + 1
-                        votes[player!!.vote] = count
+                    // iterate again to count votes
+                    for (postSnapshot in dataSnapshot.children) {
+                        player = postSnapshot.getValue(Player::class.java)
+                        if (player!!.vote != "") {
+                            val count = votes[player!!.vote]!! + 1
+                            votes[player!!.vote] = count
+                        }
                     }
-                }
 
-                populatePlayersGrid()
+                    populatePlayersGrid()
 
-                if (isHost) {
-                    lookAtVotes()
+                    if (isHost) {
+                        lookAtVotes()
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {}
@@ -420,6 +443,7 @@ class Play : Activity(){
                     if (postSnapshot.key == "spy") {
                         if (postSnapshot.value == playerID) {
                             isSpy = true
+                            spyName = playerName
                         }
                         spyID = postSnapshot.value.toString()
                     }
@@ -432,7 +456,7 @@ class Play : Activity(){
                     if (postSnapshot.key == "finished"){
                         if (postSnapshot.value == true){
                             leaveRoom()
-                            Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_LONG).show()
                             stopTime = true
                             databaseRoom.removeValue()
                         }
@@ -467,6 +491,8 @@ class Play : Activity(){
 
                             override fun onFinish() {
                                 databaseRoom.child("spyWins").setValue(true)
+                                sendMessage("", "Time's UP")
+                                sendMessage("", spyName + " was the spy!")
                                 countDown.cancel()
                             }
                         }
@@ -495,6 +521,24 @@ class Play : Activity(){
         databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
         databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
     }
+
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        if (inGame){
+//            if (hostID == playerID) {
+//                databaseRoom.child("finished").setValue(true)
+//            } else if (spyID == playerID){
+//                databaseRoomPlayers.child(playerID).removeValue()
+//                sendMessage("", playerName + " has left the game!")
+//                sendMessage("", playerName + " was the spy!")
+//                databaseRoom.child("civilianWins").setValue(true)
+//            } else {
+//                // remove the player from the list of players
+//                databaseRoomPlayers.child(playerID).removeValue()
+//                sendMessage("", playerName + " has left the game!")
+//            }
+//        }
+//    }
 
 
     @Override
