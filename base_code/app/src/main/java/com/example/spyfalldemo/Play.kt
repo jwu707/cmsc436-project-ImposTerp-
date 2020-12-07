@@ -505,6 +505,10 @@ class Play : Activity(){
                             leaveRoom()
                             Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_LONG).show()
                             stopTime = true
+                            databaseRoom.removeEventListener(onChangeListenerRoom)
+                            databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
+                            databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
+                            databaseRoom.child("messages").removeValue()
                             databaseRoom.removeValue()
                         }
                     }
