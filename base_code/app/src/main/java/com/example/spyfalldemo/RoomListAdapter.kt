@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 
+//This a RoomListAdaptor that properly displays the rooms what are avaliable in the lobby. The code was references from the firebase lab
 class RoomListAdapter(private val context: Activity, private var rooms: List<Room>) : ArrayAdapter<Room>(context,
     R.layout.list_item_room, rooms) {
 

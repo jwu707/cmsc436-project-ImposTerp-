@@ -22,7 +22,7 @@ import java.util.ArrayList
 //The Round activity is a waiting room for the players to wait for other players to join
 //users are free to leave the game at anytime, however if the host happens to leave every user will also be kicked out of the room back into Room.kt
 //in addition, the players in the room will be able to chat with one another and will be updated when another player joins
-//this activity also takes care of the distribution of roles, location, and colors through the host
+//this activity also takes care of the distribution of roles, location through the host
 
 class Round : Activity(){
     //player grid
@@ -82,7 +82,7 @@ class Round : Activity(){
         val clariceRoles = mutableListOf("Actor", "Pianist", "Orchestra", "Conductor", "Singer", "Violinist", "Dancer")
         val deliRoles = mutableListOf("Janitor", "Manager", "Cook", "Cashier", "Dish Washer", "Customer", "Restocker")
         val diningRoles = mutableListOf("Cook", "Server", "Janitor", "Dish Washer", "Hungry Student", "Receptionist", "Hungry Student")
-        val varsityRoles = mutableListOf("Janitor", "Receptionist", "Security Guard", "Loud Tenant", "Maintenance Worker", "Role6", "Role7")
+        val varsityRoles = mutableListOf("Janitor", "Receptionist", "Security Guard", "Loud Tenant", "Maintenance Worker", "Student", "Student")
         val chapelRoles = mutableListOf("Janitor", "Choir Member", "Preacher", "Bride", "Groom", "Bride", "Groom")
     }
 

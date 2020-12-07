@@ -1,5 +1,6 @@
 package com.example.spyfalldemo
 
+// creates a room class which sets the information in which a room requires and it sets the bases for what is then stored under rooms in firbase
 data class Room(
     val id : String = "",
     val name : String = "",

@@ -28,6 +28,11 @@ import java.util.ArrayList
 import kotlin.math.floor
 import kotlin.random.Random
 
+//This activity is the game element of impossterp in which the players sent questions in chat to determine who is the impossterp while the impossterp tries to find out what location they're currently at
+//This activity allows for players to send messages in chat, vote/cancel vote on certain player, and the impossterp is able to guess location, as well as the leave option.
+//the voting system is done by majority with cancellations while the guessing of locations is one time only,
+//The impossterp win by guessing the right location, or if the time runs out
+//the terps win by voting out the impossterp, by not having enough players left in the game, and by the spy leaving.
 
 class Play : Activity(){
 
