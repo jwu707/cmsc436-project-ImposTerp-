@@ -31,25 +31,38 @@ import kotlin.random.Random
 
 class Play : Activity(){
 
+    //firebase references
     private lateinit var databaseRoom: DatabaseReference
     private lateinit var databaseRoomChatLog: DatabaseReference
     private lateinit var databaseRoomPlayers: DatabaseReference
     private lateinit var onChangeListenerRoom : ValueEventListener
     private lateinit var onChangeListenerRoomChatLog : ValueEventListener
     private lateinit var onChangeListenerRoomPlayers : ValueEventListener
+
+    //chat variables
     private lateinit var chatLayout : RelativeLayout
     private lateinit var lstChatLog : ListView
-    private lateinit var txtRoomName : TextView
-    private lateinit var btnLeave : Button
     private lateinit var edtEditMessage : EditText
     private lateinit var btnChatClose : Button
+
+    //general textViews
+    private lateinit var txtRoomName : TextView
     private lateinit var txtRole : TextView
     private lateinit var txtLocation : TextView
+
+    //timer variables
     private lateinit var txtTime : TextView
+    private lateinit var countDown : CountDownTimer
+    private var time : Long = 0
+
+    //leave button
+    private lateinit var btnLeave : Button
+
+    //location & player grids
     private lateinit var grdLocations : GridLayout
     private lateinit var grdPlayers : GridLayout
-    private lateinit var icon: ImageView
-    private lateinit var votes : HashMap<String, Int>
+
+    //room, player, spy, host identifications
     private lateinit var roomID : String
     private lateinit var playerID : String
     private lateinit var playerName : String
@@ -59,24 +72,27 @@ class Play : Activity(){
     private lateinit var hostID : String
     private lateinit var spyID : String
     private lateinit var voteID : String
-    private lateinit var countDown : CountDownTimer
+    private var spyName = ""
 
+    //voting variables
+    private lateinit var votes : HashMap<String, Int>
     private var votingThreshold : Int = 99
+
+    //booleans
     private var isHost : Boolean = false
     private var isSpy : Boolean = false
     private var timing : Boolean = false
-    private var time : Long = 0
-    private var spyName = ""
-    private var inGame = true
-    private val MIN_PLAYER = 2
+
+    //player count variables
+    private val MIN_PLAYER = 3
     private var playerCount = 100
 
-    private val icons = arrayOf(R.drawable.bee, R.drawable.top_hat, R.drawable.tu_tu, R.drawable.nerd, R.drawable.pirate)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
 
+        //initalizing variables
         lstChatLog = findViewById(R.id.chat_log)
         txtRoomName = findViewById(R.id.room_name)
         btnLeave = findViewById(R.id.leave)
@@ -92,14 +108,17 @@ class Play : Activity(){
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
 
+
         players = ArrayList()
         playersMap = HashMap<String, Player>()
         votes = HashMap<String, Int>()
 
+        //setting up firebase referneces
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
         databaseRoomPlayers = databaseRoom.child("players")
         databaseRoomChatLog = databaseRoom.child("messages")
 
+        //setting up grids
         grdLocations = findViewById(R.id.locations_grid)
         grdPlayers = findViewById(R.id.players_grid)
 
@@ -107,6 +126,7 @@ class Play : Activity(){
             leaveRoom()
         }
 
+        //close chat
         btnChatClose.setOnClickListener{
             chatLayout.setBackgroundColor(Color.parseColor("#00000000"))
             var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
@@ -146,6 +166,8 @@ class Play : Activity(){
         spyID = ""
     }
 
+
+    //send messages
     private fun sendMessage(sender : String, content : String) {
         // make sure message is not blank
         if (content != "") {
@@ -154,6 +176,7 @@ class Play : Activity(){
         }
     }
 
+    //leaving the room back into the lobby
     private fun leaveRoom() {
         if (hostID == playerID) {
             databaseRoom.child("finished").setValue(true)
@@ -173,6 +196,7 @@ class Play : Activity(){
         startActivity(backLobby)
     }
 
+    //build the grid for players in the game, in additon enable player voting on each name
     @SuppressLint("Range")
     private fun populatePlayersGrid() {
         // reset layout
@@ -181,17 +205,20 @@ class Play : Activity(){
             val player = players[i]
             val plate = layoutInflater.inflate(R.layout.plate, null)
             var textView = plate.findViewById<TextView>(R.id.plate_text)
-            textView.text = player.name
-            val color = player.color
-            textView.setBackgroundColor(Color.parseColor(color))
+
             plate.id = i
             if (player.id != playerID) {
                 plate.setOnClickListener { txtPlayerOnClick(i) }
+                textView.text = player.name
+            } else {
+                textView.text = player.name + " (You!)"
             }
             grdPlayers.addView(plate)
         }
     }
 
+    //initiate the voting phase of when a user clicks on another users name
+    //when a user clicks on the name again it enables the player to cancel their previous vote
     private fun txtPlayerOnClick(index : Int) {
         // indices between view id and player index in players array are offset
         val plate = grdPlayers[index]
@@ -228,6 +255,7 @@ class Play : Activity(){
         b.show()
     }
 
+    //build the grid for all the potential locations and enables the spy to be able to select the their guess
     private fun populateLocationsGrid() {
 
         grdLocations.removeAllViews()
@@ -247,6 +275,7 @@ class Play : Activity(){
         }
     }
 
+    //fill in the location grid and enable guessing
     private fun txtLocationOnClick(index : Int) {
         val plate = grdLocations[index]
         val textView = plate.findViewById<TextView>(R.id.plate_text)
@@ -269,6 +298,7 @@ class Play : Activity(){
         b.show()
     }
 
+    //checks whether the spy's guess was the correct location and set out the correct win screens for the users
     private fun guessLocation(guess : String) {
         if (guess == location) {
             // spy WINS
@@ -281,6 +311,7 @@ class Play : Activity(){
         sendMessage("", playerName + " was the spy!")
     }
 
+    //checks the votes to make sure that a majority is reached before booting off the potenial spy
     private fun lookAtVotes() {
 
         // re-calculate voting threshold to account for players leaving
@@ -306,12 +337,18 @@ class Play : Activity(){
         }
     }
 
+    //The pop-up winner display for both impossterps and terps
+    //win is true for spys
+    //win is false for terps
     private fun spyWinsAlert(win : Boolean) {
+
+        //if the number of people left in the game is below Min players than terps win and the text below is displayed
         if (win == false && playerCount < MIN_PLAYER){
             sendMessage("", "No enough players!")
             sendMessage("", playerName + " was the spy!")
         }
 
+        //unhook the event listeners as we are switching back into the waiting room
         databaseRoom.removeEventListener(onChangeListenerRoom)
         databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
         databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
@@ -336,14 +373,18 @@ class Play : Activity(){
             }
         }
         lobbyReturnCounter.start()
+
+        //make sure to change the game status
         databaseRoom.child("inGame").setValue(false)
-        inGame = false
+
+        //host should cancel the timer
         if (isHost){
             countDown.cancel()
         }
 
     }
 
+    // sents the players back to the lobby/waiting room
     private fun backToLobby() {
         val intent = Intent(applicationContext, Round::class.java)
         intent.putExtra("ROOM_ID", roomID)
@@ -365,6 +406,7 @@ class Play : Activity(){
                 votes.clear()
 
                 var player: Player? = null
+                //checks if the current player meets the minimun required else the terps win
                 if (dataSnapshot.childrenCount < MIN_PLAYER){
                     playerCount = dataSnapshot.childrenCount.toInt()
                     databaseRoom.child("civilianWins").setValue(true)
@@ -404,6 +446,7 @@ class Play : Activity(){
             override fun onCancelled(error: DatabaseError) {}
         })
 
+        //listener for chat reference changes
         onChangeListenerRoomChatLog = databaseRoomChatLog.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -420,6 +463,7 @@ class Play : Activity(){
             override fun onCancelled(error: DatabaseError) {}
         })
 
+        //listener for room reference changes
         onChangeListenerRoom = databaseRoom.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 var stopTime = false
@@ -464,6 +508,7 @@ class Play : Activity(){
                     if (postSnapshot.key == "time") {
                         time = postSnapshot.value as Long
                     }
+                    //updates timer
                     if (postSnapshot.key == "timeRemaining") {
                         val ms = postSnapshot.value as Long
                         val min = ms / 60000
@@ -489,6 +534,7 @@ class Play : Activity(){
                                 databaseRoom.child("timeRemaining").setValue(millisUntilFinished)
                             }
 
+                            //when time is up the spy wins
                             override fun onFinish() {
                                 databaseRoom.child("spyWins").setValue(true)
                                 sendMessage("", "Time's UP")
@@ -515,30 +561,13 @@ class Play : Activity(){
         })
     }
 
+    //make sure the event listeners only affects users in the current activity
     override fun onPause() {
         super.onPause()
         databaseRoom.removeEventListener(onChangeListenerRoom)
         databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
         databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
     }
-
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        if (inGame){
-//            if (hostID == playerID) {
-//                databaseRoom.child("finished").setValue(true)
-//            } else if (spyID == playerID){
-//                databaseRoomPlayers.child(playerID).removeValue()
-//                sendMessage("", playerName + " has left the game!")
-//                sendMessage("", playerName + " was the spy!")
-//                databaseRoom.child("civilianWins").setValue(true)
-//            } else {
-//                // remove the player from the list of players
-//                databaseRoomPlayers.child(playerID).removeValue()
-//                sendMessage("", playerName + " has left the game!")
-//            }
-//        }
-//    }
 
 
     @Override

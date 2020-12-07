@@ -19,32 +19,47 @@ import android.widget.*
 import java.lang.Exception
 import java.util.ArrayList
 
+//The Round activity is a waiting room for the players to wait for other players to join
+//users are free to leave the game at anytime, however if the host happens to leave every user will also be kicked out of the room back into Room.kt
+//in addition, the players in the room will be able to chat with one another and will be updated when another player joins
+//this activity also takes care of the distribution of roles, location, and colors through the host
+
 class Round : Activity(){
+    //player grid
     private lateinit var grdPlayers: GridLayout
+
+    //variables for chat
     private lateinit var lstChatLog: ListView
     private lateinit var btnChatClose : Button
     private lateinit var chatLayout : RelativeLayout
     private lateinit var edtEditMessage : EditText
+
+    //room name, start and leave game button
     private lateinit var txtRoomName : TextView
     private lateinit var btnStart: Button
     private lateinit var btnLeave: Button
+
+    //player, room, role, and host variables
     private lateinit var players: MutableList<Player>
     private lateinit var playerID : String
     private lateinit var playerName : String
     private lateinit var roomID : String
+    private lateinit var hostID : String
+    private lateinit var roles : HashMap<String, MutableList<String>>
+
+    //firbase referneces
     private lateinit var databaseRoom: DatabaseReference
     private lateinit var databaseRoomPlayers: DatabaseReference
     private lateinit var databaseRoomChatLog: DatabaseReference
     private lateinit var onChangeListenerRoom : ValueEventListener
     private lateinit var onChangeListenerPlayers : ValueEventListener
     private lateinit var onChangeListenerChatLog : ValueEventListener
-    private lateinit var hostID : String
-    private lateinit var roles : HashMap<String, MutableList<String>>
+
 
     companion object {
         const val MIN_PLAYERS = Rooms.MIN_PLAYERS
 
-        //!!!!!!!!!!!make sure the role sizes are consistent! right now there's FIVE roles!!!!!!!!!!!!!!!//
+        //List of all the locations
         val locations = arrayOf(
             "Capital One Field",
             "Memorial Chapel",
@@ -57,23 +72,25 @@ class Round : Activity(){
             "Eppley",
             "Iribe"
         )
-        val stampRoles = mutableListOf("Janitor", "Receptionist", "Role3", "Role4", "Role5", "Role6", "Role7")
-        val iribeRoles = mutableListOf("Larry Herman", "Clyde Kruskal", "Adviser", "Teaching Assistant", "Role5", "Role6", "Role7")
-        val fieldRoles = mutableListOf("Football Player", "Crowd Member", "Role3", "Role4", "Role5", "Role6", "Role7")
-        val eppleyRoles = mutableListOf("Weightlifter", "Runner", "Personal Trainer", "Role4", "Role5", "Role6", "Role7")
-        val libraryRoles = mutableListOf("Student", "Librarian", "Role3", "Role4", "Role5", "Role6", "Role7")
-        val clariceRoles = mutableListOf("Role1", "Role2", "Role3", "Role4", "Role5", "Role6", "Role7")
-        val deliRoles = mutableListOf("Janitor", "Manager", "Cook", "Cashier", "Dish Washer", "Role6", "Role7")
-        val diningRoles = mutableListOf("Cook", "Server", "Janitor", "Dish Washer", "Role5", "Role6", "Role7")
+
+        //listd of roles at each corresponding locations
+        val stampRoles = mutableListOf("Janitor", "Receptionist", "Student", "Student", "Fast Food Worker", "Cashier", "Cashier")
+        val iribeRoles = mutableListOf("Larry Herman", "Clyde Kruskal", "Adviser", "Teaching Assistant", "Dying CS Student", "Teaching Assistant", "Dying CS Student")
+        val fieldRoles = mutableListOf("Football Player", "Crowd Member", "Cheer Leader", "Coach", "Food Vendor", "Football Player", "Crowd Member")
+        val eppleyRoles = mutableListOf("Weightlifter", "Runner", "Personal Trainer", "Body Builder", "Yoga Instructor", "Karate Instructor", "Jogger")
+        val libraryRoles = mutableListOf("Student", "Librarian", "Book", "StarBucks Employee", "Student", "Librarian", "Book")
+        val clariceRoles = mutableListOf("Actor", "Pianist", "Orchestra", "Conductor", "Singer", "Violinist", "Dancer")
+        val deliRoles = mutableListOf("Janitor", "Manager", "Cook", "Cashier", "Dish Washer", "Customer", "Restocker")
+        val diningRoles = mutableListOf("Cook", "Server", "Janitor", "Dish Washer", "Hungry Student", "Receptionist", "Hungry Student")
         val varsityRoles = mutableListOf("Janitor", "Receptionist", "Security Guard", "Loud Tenant", "Maintenance Worker", "Role6", "Role7")
         val chapelRoles = mutableListOf("Janitor", "Choir Member", "Preacher", "Bride", "Groom", "Bride", "Groom")
-        val colors = mutableListOf("#bf0000","#d97b00","#0f0f0f","#00d9d9","#0045d9","#7000d9","#ce00d9","#6b6b6b")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting)
 
+        //initalizing variables
         grdPlayers = findViewById(R.id.players_grid)
         lstChatLog = findViewById(R.id.chat_log)
         edtEditMessage = findViewById(R.id.edit_message)
@@ -87,6 +104,7 @@ class Round : Activity(){
         playerID = intent.getStringExtra("PLAYER_ID").toString()
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
 
+        //connecting the location to their roles
         roles = HashMap<String, MutableList<String>>()
         roles["The Stamp"] = stampRoles
         roles["Iribe"] = iribeRoles
@@ -99,11 +117,13 @@ class Round : Activity(){
         roles["The Varsity"] = varsityRoles
         roles["Memorial Chapel"] = chapelRoles
 
+        //initalizing players and firebase refernces
         players = ArrayList()
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
         databaseRoomPlayers = databaseRoom.child("players")
         databaseRoomChatLog = databaseRoom.child("messages")
 
+        //leave button onClickListener
         btnLeave.setOnClickListener{
             if (hostID == playerID){
                 databaseRoom.child("finished").setValue(true)
@@ -115,6 +135,7 @@ class Round : Activity(){
             }
         }
 
+        //start button onClickListener
         btnStart.setOnClickListener{
             if(players.size >= MIN_PLAYERS){
                 databaseRoom.child("inGame").setValue(true)
@@ -135,18 +156,16 @@ class Round : Activity(){
                 databaseRoom.child("spy").setValue(spyID)
 
                 roles[location]!!.shuffle()
-                colors.shuffle()
                 // reset player vote and roles
-                // real jank
                 var offset = 0
                 val playersMap = HashMap<String, Player>()
                 for(i in players.indices) {
                     val player = players[i]
                     if (player.id != spyID) {
                         val role = roles[location]?.get(i - offset).toString()
-                        playersMap[player.id] = Player(player.id, player.name, role, "", colors[i])
+                        playersMap[player.id] = Player(player.id, player.name, role, "")
                     } else {
-                        playersMap[player.id] = Player(player.id, player.name, "Spy", "", colors[i])
+                        playersMap[player.id] = Player(player.id, player.name, "Spy", "")
                         offset = 1
                     }
                 }
@@ -157,6 +176,7 @@ class Round : Activity(){
             }
         }
 
+        //closing chat
         btnChatClose.setOnClickListener{
             chatLayout.setBackgroundColor(Color.parseColor("#00000000"))
             var params = chatLayout.layoutParams as RelativeLayout.LayoutParams
@@ -197,6 +217,7 @@ class Round : Activity(){
         sendMessage("", playerName + " has joined the game!")
     }
 
+    //send messages into chat
     private fun sendMessage(sender : String, content : String) {
         // make sure message is not blank
         if (content != "") {
@@ -205,6 +226,7 @@ class Round : Activity(){
         }
     }
 
+    //intent that send users ti Play.kt
     private fun startGame() {
         val intent = Intent(applicationContext, Play::class.java)
         intent.putExtra("ROOM_ID", roomID)
@@ -214,6 +236,7 @@ class Round : Activity(){
         finish()
     }
 
+    //leaving the room
     private fun leaveRoom() {
         val backLobby = Intent(applicationContext, Rooms::class.java)
         backLobby.putExtra("PLAYER_ID", playerID)
@@ -225,17 +248,19 @@ class Round : Activity(){
     override fun onStart() {
         super.onStart()
 
+        //checks for changes happening to the room firebase reference
         onChangeListenerRoom = databaseRoom.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                //make sure to update before staring//
-                var gameStat = false
+                var gameStat = false //is the game ready to start
 
+                //checks for inGame
                 for (postSnapshot in dataSnapshot.children) {
                     if (postSnapshot.key == "inGame") {
                         if (postSnapshot.value as Boolean) {
                             gameStat = true
                         }
                     }
+
                     if (postSnapshot.key == "host") {
                         hostID = postSnapshot.value.toString()
                         if (postSnapshot.value != playerID) {
@@ -249,6 +274,7 @@ class Round : Activity(){
                         txtRoomName.text = postSnapshot.value.toString()
                     }
 
+                    //when people leaves the game
                     if (postSnapshot.key == "finished"){
                         if (postSnapshot.value as Boolean){
                             databaseRoom.removeValue()
@@ -263,6 +289,7 @@ class Round : Activity(){
                         }
                     }
                 }
+                //starts the game is inGame == true
                 if (gameStat){
                     startGame()
                 }
@@ -270,6 +297,7 @@ class Round : Activity(){
             override fun onCancelled(error: DatabaseError) {}
         })
 
+        //checks for changes happening to the chat reference
         onChangeListenerChatLog = databaseRoomChatLog.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -286,6 +314,7 @@ class Round : Activity(){
             override fun onCancelled(error: DatabaseError) {}
         })
 
+        //checks for changes happening to the player reference
         onChangeListenerPlayers = databaseRoomPlayers.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -306,6 +335,7 @@ class Round : Activity(){
         })
     }
 
+    //make sure the event listeners only affects users in the current activity
     override fun onPause() {
         super.onPause()
         databaseRoom.removeEventListener(onChangeListenerRoom)
@@ -314,6 +344,7 @@ class Round : Activity(){
     }
 
 
+    //add players to the listView
     private fun populatePlayersGrid() {
         // reset layout
         grdPlayers.removeAllViews()
