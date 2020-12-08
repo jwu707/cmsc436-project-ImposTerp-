@@ -493,6 +493,7 @@ class Play : Activity(){
                         hostID = postSnapshot.value.toString()
                         if (postSnapshot.value == playerID) {
                             isHost = true
+                            databaseRoom.child("finished").onDisconnect().setValue(true)
                         }
                     }
                     if (postSnapshot.key == "spy") {
@@ -578,11 +579,6 @@ class Play : Activity(){
         databaseRoom.removeEventListener(onChangeListenerRoom)
         databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
         databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
-    }
-
-    @Override
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     @Override

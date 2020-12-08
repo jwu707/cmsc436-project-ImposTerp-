@@ -280,6 +280,9 @@ class Round : Activity(){
                             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
                             edtEditMessage.layoutParams = params
                         }
+                        if (playerID == hostID) {
+                            databaseRoom.child("finished").onDisconnect().setValue(true)
+                        }
                     }
                     if (postSnapshot.key == "name") {
                         txtRoomName.text = postSnapshot.value.toString()
@@ -288,6 +291,7 @@ class Round : Activity(){
                     //when people leaves the game
                     if (postSnapshot.key == "finished"){
                         if (postSnapshot.value as Boolean) {
+                            databaseRoom.removeValue()
                             if (hostID != playerID) {
                                 Toast.makeText(
                                     applicationContext,
@@ -373,20 +377,6 @@ class Round : Activity(){
             grdPlayers.addView(plate)
 
         }
-    }
-
-    @Override
-    override fun onDestroy() {
-        if (hostID == playerID) {
-            FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("finished").setValue(true)
-            databaseRoom.removeValue()
-        } else {
-            // remove the player from the list of players
-            val msg = ChatMessage("", playerName + " has left the game!")
-            FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("messages").push().setValue(msg)
-        }
-
-        super.onDestroy()
     }
 
     @Override
