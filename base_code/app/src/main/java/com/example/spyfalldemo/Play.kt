@@ -184,6 +184,7 @@ class Play : Activity(){
     private fun leaveRoom() {
         if (hostID == playerID) {
             databaseRoom.child("finished").setValue(true)
+            countDown.cancel()
         } else if (spyID == playerID){
             databaseRoomPlayers.child(playerID).removeValue()
             sendMessage("", playerName + " has left the game!")
@@ -470,7 +471,6 @@ class Play : Activity(){
         //listener for room reference changes
         onChangeListenerRoom = databaseRoom.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                var stopTime = false
                 var spyWins = false
                 var civilWins = false
                 for (postSnapshot in dataSnapshot.children) {
@@ -504,7 +504,6 @@ class Play : Activity(){
                         if (postSnapshot.value == true){
                             leaveRoom()
                             Toast.makeText(applicationContext, "Host has left the game", Toast.LENGTH_LONG).show()
-                            stopTime = true
                             databaseRoom.removeEventListener(onChangeListenerRoom)
                             databaseRoomChatLog.removeEventListener(onChangeListenerRoomChatLog)
                             databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
@@ -523,11 +522,8 @@ class Play : Activity(){
                         txtTime.text = String.format("%d:%02d", min, sec)
                     }
                 }
-                if (stopTime == true){
-                    if (countDown != null){
-                        countDown.cancel()
-                    }
-                } else {
+
+
                     if (isSpy) {
                         txtLocation.text = "Guess the Location to WIN!"
                     } else {
@@ -563,7 +559,7 @@ class Play : Activity(){
                     }
 
                     populateLocationsGrid()
-                }
+
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })
