@@ -41,6 +41,7 @@ class Rooms : Activity() {
 
     //firebase references
     private lateinit var databaseRooms : DatabaseReference
+    private lateinit var databasePlayer : DatabaseReference
     private lateinit var onChangeListenerRooms : ValueEventListener
 
 
@@ -56,6 +57,9 @@ class Rooms : Activity() {
         playerName = intent.getStringExtra("PLAYER_NAME").toString()
 
         databaseRooms = FirebaseDatabase.getInstance().getReference("rooms")
+
+        databasePlayer = FirebaseDatabase.getInstance().getReference("players").child(playerID)
+        databasePlayer.onDisconnect().removeValue()
 
         rooms = ArrayList()
 
@@ -172,7 +176,7 @@ class Rooms : Activity() {
         intent.putExtra("PLAYER_ID", playerID)
         intent.putExtra("PLAYER_NAME", playerName)
         startActivity(intent)
-        finish()
+        //finish()
     }
 
     //adds a room to the firebase database
@@ -208,14 +212,6 @@ class Rooms : Activity() {
         super.onPause()
         databaseRooms.removeEventListener(onChangeListenerRooms)
     }
-
-    /*
-    @Override
-    override fun onDestroy() {
-        super.onDestroy()
-        FirebaseDatabase.getInstance().getReference("players").child(playerID).removeValue()
-    }
-    */
 
     @Override
     override fun onBackPressed()

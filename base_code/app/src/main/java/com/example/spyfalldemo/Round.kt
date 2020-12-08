@@ -48,6 +48,8 @@ class Round : Activity(){
     private lateinit var roles : HashMap<String, MutableList<String>>
 
     //firbase referneces
+    private lateinit var databasePlayerInRoom: DatabaseReference
+    private lateinit var databasePlayer: DatabaseReference
     private lateinit var databaseRoom: DatabaseReference
     private lateinit var databaseRoomPlayers: DatabaseReference
     private lateinit var databaseRoomChatLog: DatabaseReference
@@ -122,6 +124,12 @@ class Round : Activity(){
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
         databaseRoomPlayers = databaseRoom.child("players")
         databaseRoomChatLog = databaseRoom.child("messages")
+
+        databasePlayer = FirebaseDatabase.getInstance().getReference("rooms").child(playerID)
+        databasePlayer.onDisconnect().removeValue()
+        databasePlayerInRoom = databaseRoomPlayers.child(playerID)
+        databasePlayerInRoom.onDisconnect().removeValue()
+
 
         //leave button onClickListener
         btnLeave.setOnClickListener{
@@ -233,16 +241,19 @@ class Round : Activity(){
         intent.putExtra("PLAYER_ID", playerID)
         intent.putExtra("PLAYER_NAME", playerName)
         startActivity(intent)
-        finish()
+        //finish()
     }
 
     //leaving the room
     private fun leaveRoom() {
+        if (hostID == playerID) {
+            databaseRoom.removeValue()
+        }
         val backLobby = Intent(applicationContext, Rooms::class.java)
         backLobby.putExtra("PLAYER_ID", playerID)
         backLobby.putExtra("PLAYER_NAME", playerName)
         startActivity(backLobby)
-        finish()
+        //finish()
     }
 
     override fun onStart() {
@@ -276,8 +287,7 @@ class Round : Activity(){
 
                     //when people leaves the game
                     if (postSnapshot.key == "finished"){
-                        if (postSnapshot.value as Boolean){
-                            databaseRoom.removeValue()
+                        if (postSnapshot.value as Boolean) {
                             if (hostID != playerID) {
                                 Toast.makeText(
                                     applicationContext,
@@ -363,9 +373,22 @@ class Round : Activity(){
             grdPlayers.addView(plate)
 
         }
-
-
     }
+
+    @Override
+    override fun onDestroy() {
+        if (hostID == playerID) {
+            FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("finished").setValue(true)
+            databaseRoom.removeValue()
+        } else {
+            // remove the player from the list of players
+            val msg = ChatMessage("", playerName + " has left the game!")
+            FirebaseDatabase.getInstance().getReference("rooms").child(roomID).child("messages").push().setValue(msg)
+        }
+
+        super.onDestroy()
+    }
+
     @Override
     override fun onBackPressed()
     {

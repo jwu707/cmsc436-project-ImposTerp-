@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtra("PLAYER_ID", playerID)
                     intent.putExtra("PLAYER_NAME", playerName)
                     startActivity(intent)
-                    finish()
+                        //finish()
                 }
             }
             override fun onCancelled(error: DatabaseError) {

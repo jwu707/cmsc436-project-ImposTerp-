@@ -37,6 +37,8 @@ import kotlin.random.Random
 class Play : Activity(){
 
     //firebase references
+    private lateinit var databasePlayerInRoom: DatabaseReference
+    private lateinit var databasePlayer: DatabaseReference
     private lateinit var databaseRoom: DatabaseReference
     private lateinit var databaseRoomChatLog: DatabaseReference
     private lateinit var databaseRoomPlayers: DatabaseReference
@@ -121,6 +123,11 @@ class Play : Activity(){
         databaseRoom = FirebaseDatabase.getInstance().getReference("rooms").child(roomID)
         databaseRoomPlayers = databaseRoom.child("players")
         databaseRoomChatLog = databaseRoom.child("messages")
+
+        databasePlayer = FirebaseDatabase.getInstance().getReference("rooms").child(playerID)
+        databasePlayer.onDisconnect().removeValue()
+        databasePlayerInRoom = databaseRoomPlayers.child(playerID)
+        databasePlayerInRoom.onDisconnect().removeValue()
 
         //setting up grids
         grdLocations = findViewById(R.id.locations_grid)
@@ -573,10 +580,28 @@ class Play : Activity(){
         databaseRoomPlayers.removeEventListener(onChangeListenerRoomPlayers)
     }
 
+    @Override
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
     @Override
     override fun onBackPressed()
     {
-        leaveRoom()
+        val dialogBuilder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.generic_confirm_dialog, null)
+        dialogBuilder.setView(dialogView)
+
+        val message = dialogView.findViewById<View>(R.id.message) as TextView
+        val btnYes = dialogView.findViewById<View>(R.id.yes) as Button
+
+        message.text = "Are you sure you want to leave the game?"
+
+        val b = dialogBuilder.create()
+        btnYes.setOnClickListener{
+            leaveRoom()
+            b.dismiss()
+        }
+        b.show()
     }
 }
